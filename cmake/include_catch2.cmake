@@ -1,0 +1,5 @@
+set(Catch2_DIR "${CMAKE_SOURCE_DIR}/third_party/catch2/lib/cmake/Catch2")
+if(NOT EXISTS ${Catch2_DIR})
+  set(Catch2_DIR "${CMAKE_SOURCE_DIR}/third_party/catch2/lib64/cmake/Catch2")
+endif()
+find_package(Catch2 REQUIRED)
