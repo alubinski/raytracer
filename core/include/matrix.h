@@ -239,3 +239,7 @@ Matrix<COLS, ROWS> Matrix<ROWS, COLS>::inverse() const {
   }
   return inverted;
 }
+
+using Mat44 = Matrix<4, 4>;
+using Mat33 = Matrix<3, 3>;
+using Mat22 = Matrix<2, 2>;
