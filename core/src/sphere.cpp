@@ -4,6 +4,7 @@
 #include "tuple.h"
 #include <cmath>
 #include <optional>
+#include <stdexcept>
 #include <utility>
 
 std::optional<std::pair<Intersection, Intersection>>
@@ -23,4 +24,17 @@ Sphere::intersept(const Ray &ray) const {
   const auto t2 = (-b + std::sqrt(discriminant)) / (2 * a);
   return std::make_pair(Intersection(t1, shared_from_this()),
                         Intersection(t2, shared_from_this()));
+}
+
+vector_t Sphere::normalsAt(const point_t &worldPoint) const {
+  if (!worldPoint.isPoint()) {
+    throw std::invalid_argument("Sphere::normalsAt() expects a point as "
+                                "input, but a non-point value was provided.");
+  }
+  const auto objectPoint = transformation().inverse() * worldPoint;
+  const auto objectNormal = objectPoint - Point(0, 0, 0);
+  auto worldNormal = transformation().inverse().transpose() * objectNormal;
+  // hack - noramlly we should take transformation.submatrix(3,3)
+  worldNormal.w = 0.f;
+  return worldNormal.normalize();
 }

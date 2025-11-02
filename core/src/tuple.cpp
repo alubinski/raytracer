@@ -1,6 +1,7 @@
 #include "tuple.h"
 #include "math.h"
 #include <cmath>
+#include <stdexcept>
 
 bool Tuple::isPoint() const { return w == 1; }
 
@@ -13,6 +14,17 @@ float Tuple::magnitude() const {
 Tuple Tuple::normalize() const {
   return Tuple(x / magnitude(), y / magnitude(), z / magnitude(),
                w / magnitude());
+}
+
+Tuple Tuple::reflect(const Tuple &normal) const {
+  if (!isVector()) {
+    throw std::logic_error("Tuple::reflect() called on a non-vector object.");
+  }
+  if (!normal.isVector()) {
+    throw std::invalid_argument("Tuple::reflect() expects the 'normal' "
+                                "parameter to be a vector, but it is not.");
+  }
+  return (*this) - (normal * (2.f * dotProduct(*this, normal)));
 }
 
 Tuple Vector(float x, float y, float z) { return Tuple(x, y, z, 0); }

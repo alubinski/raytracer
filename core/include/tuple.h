@@ -22,6 +22,8 @@ struct Tuple {
     return os << "{" << t.x << ", " << t.y << ", " << t.z << ", " << t.w << "}";
   }
 
+  Tuple reflect(const Tuple &normal) const;
+
   float x, y, z, w;
 };
 

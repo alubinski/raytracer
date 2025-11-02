@@ -1,5 +1,5 @@
+#pragma once
 #include "tuple.h"
-#include <vector>
 
 struct Color : public Tuple {
 public:
@@ -27,6 +27,31 @@ public:
   float &r;
   float &g;
   float &b;
+
+  static Color const &white() {
+    static Color c(1.f, 1.f, 1.f);
+    return c;
+  }
+  static Color const &black() {
+    static Color c(0.f, 0.f, 0.f);
+    return c;
+  }
+  static Color const &red() {
+    static Color c(1.f, 0.f, 0.f);
+    return c;
+  }
+  static Color const &green() {
+    static Color c(0.f, 1.f, 0.f);
+    return c;
+  }
+  static Color const &blue() {
+    static Color c(0.f, 0.f, 1.f);
+    return c;
+  }
+  static Color const &yellow() {
+    static Color c(1.f, 1.f, 0.f);
+    return c;
+  }
 
 private:
   using Tuple::w;

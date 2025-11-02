@@ -45,5 +45,4 @@ std::vector<Intersection> intersections(const Args &...args) {
   return xs;
 }
 
-std::optional<std::reference_wrapper<const Intersection>>
-hit(const std::vector<Intersection> &xs);
+std::optional<const Intersection> hit(const std::vector<Intersection> &xs);

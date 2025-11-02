@@ -1,6 +1,8 @@
 #pragma once
 
+#include "material.h"
 #include "matrix.h"
+#include "tuple.h"
 #include <optional>
 
 class Ray;
@@ -14,13 +16,19 @@ public:
   using UPtr = std::unique_ptr<Shape>;
   using ConstUPtr = std::unique_ptr<const Shape>;
 
-  Shape() : transformation_(Mat44::identity()) {}
+  Shape() : transformation_(Mat44::identity()), material_(Material()) {}
 
   virtual std::optional<std::pair<Intersection, Intersection>>
   intersept(const Ray &ray) const = 0;
+  virtual vector_t normalsAt(const point_t &p) const = 0;
   Mat44 transformation() const { return transformation_; }
   void setTransformation(const Mat44 &m) { transformation_ = m; }
 
+  Material material() const { return material_; }
+
+  void setMaterial(const Material &material) { material_ = material; }
+
 private:
   Mat44 transformation_;
+  Material material_;
 };

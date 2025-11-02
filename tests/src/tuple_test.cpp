@@ -143,3 +143,19 @@ TEST_CASE("tuple - Cross product") {
   REQUIRE(crossProduct(v1, v2) == Vector(-1, 2, -1));
   REQUIRE(crossProduct(v2, v1) == Vector(1, -2, 1));
 }
+
+TEST_CASE("tuple - reflect") {
+  SECTION("vector approaching at 45 degrees") {
+    const auto v = Vector(1, -1, 0);
+    const auto n = Vector(0, 1, 0);
+    const auto r = v.reflect(n);
+    REQUIRE(r == Vector(1, 1, 0));
+  }
+
+  SECTION("of a slanted surfaced") {
+    const auto v = Vector(0, -1, 0);
+    const auto n = Vector(std::sqrt(2) / 2, std::sqrt(2) / 2, 0);
+    const auto r = v.reflect(n);
+    REQUIRE(r == Vector(1, 0, 0));
+  }
+}
