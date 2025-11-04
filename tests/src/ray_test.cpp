@@ -1,9 +1,11 @@
+#include "intersection.h"
 #include "matrix.h"
 #include "ray.h"
 #include "sphere.h"
 #include "transformations.h"
 #include "tuple.h"
 #include <catch2/catch.hpp>
+#include <memory>
 
 TEST_CASE("ray - constructor") {
   const auto origin = Point(1, 2, 3);
@@ -114,5 +116,38 @@ TEST_CASE("ray - multiplication operator") {
     const auto r2 = r * m;
     REQUIRE(r2.origin() == Point(2, 6, 12));
     REQUIRE(r2.direction() == Vector(0, 3, 0));
+  }
+}
+
+TEST_CASE("ray - precompute") {
+  SECTION("basic intersection") {
+    const auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
+    const auto s = std::make_shared<Sphere>();
+    const auto i = Intersection(4.f, s);
+    const auto comps = r.precompute(i);
+    REQUIRE(comps.t == i.t());
+    REQUIRE(comps.object == i.object());
+    REQUIRE(comps.point == Point(0, 0, -1));
+    REQUIRE(comps.eyeV == Vector(0, 0, -1));
+    REQUIRE(comps.normalV == Vector(0, 0, -1));
+  }
+
+  SECTION("intersection occurs on the outside") {
+    const auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
+    const auto s = std::make_shared<Sphere>();
+    const auto i = Intersection(4.f, s);
+    const auto comps = r.precompute(i);
+    REQUIRE_FALSE(comps.inside);
+  }
+
+  SECTION("intersection occurs on the inside") {
+    const auto r = Ray(Point(0, 0, 0), Vector(0, 0, 1));
+    const auto s = std::make_shared<Sphere>();
+    const auto i = Intersection(1.f, s);
+    const auto comps = r.precompute(i);
+    REQUIRE(comps.point == Point(0, 0, 1));
+    REQUIRE(comps.eyeV == Vector(0, 0, -1));
+    REQUIRE(comps.inside);
+    REQUIRE(comps.normalV == Vector(0, 0, -1));
   }
 }

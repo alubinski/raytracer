@@ -6,13 +6,21 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 Canvas::Canvas(uint32_t width, uint32_t height)
     : width_(width), height_(height) {
   pixels_ = new Color[width * height];
 }
 
-Color Canvas::operator()(size_t w, size_t h) { return pixels_[w + h * width_]; }
+Canvas::Canvas(Canvas &&other)
+    : width_(std::exchange(other.width_, 0)),
+      height_(std::exchange(other.height_, 0)),
+      pixels_(std::exchange(other.pixels_, nullptr)) {}
+
+Color Canvas::operator()(size_t w, size_t h) const {
+  return pixels_[w + (h * width_)];
+}
 
 uint32_t Canvas::width() const { return width_; }
 
@@ -59,9 +67,9 @@ void Canvas::writePPMPixelsRow(std::ostringstream &oss, size_t row) const {
 uint32_t Canvas::writePPMPixel(std::ostringstream &oss, size_t row, size_t col,
                                uint32_t rowWidth) const {
   const Color c = pixels_[col + row * width_];
-  rowWidth = writePPMColorComponent(oss, c.r, rowWidth);
-  rowWidth = writePPMColorComponent(oss, c.g, rowWidth);
-  return rowWidth = writePPMColorComponent(oss, c.b, rowWidth);
+  rowWidth = writePPMColorComponent(oss, c.r(), rowWidth);
+  rowWidth = writePPMColorComponent(oss, c.g(), rowWidth);
+  return rowWidth = writePPMColorComponent(oss, c.b(), rowWidth);
 }
 
 std::string Canvas::getAsPPMColor(float color) const {

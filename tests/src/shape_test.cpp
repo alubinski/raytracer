@@ -16,6 +16,8 @@ public:
   }
 
   vector_t normalsAt(const point_t &p) const { return Vector(0, 0, 0); }
+
+  bool operator==(const Shape &other) const override { return false; }
 };
 
 TEST_CASE("shape - transformation") {

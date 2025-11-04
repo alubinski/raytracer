@@ -3,9 +3,9 @@
 
 TEST_CASE("color - Constructor") {
   const auto c = Color(-0.5, 0.4, 2.7);
-  REQUIRE(c.r == Approx(-0.5f));
-  REQUIRE(c.g == Approx(0.4f));
-  REQUIRE(c.b == Approx(2.7f));
+  REQUIRE(c.r() == Approx(-0.5f));
+  REQUIRE(c.g() == Approx(0.4f));
+  REQUIRE(c.b() == Approx(2.7f));
 }
 
 TEST_CASE("color - Addition operator") {
@@ -27,7 +27,7 @@ TEST_CASE("color - Multiplication operator") {
   }
 
   SECTION("color * color") {
-    const auto c1 = Color(1, 0.2, 04);
+    const auto c1 = Color(1, 0.2, 0.4);
     const auto c2 = Color(0.9, 1, 0.1);
     REQUIRE(c1 * c2 == Color(0.9, 0.2, 0.04));
   }

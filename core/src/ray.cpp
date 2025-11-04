@@ -1,8 +1,12 @@
 #include "ray.h"
+#include "computation.h"
 #include "intersection.h"
 #include "tuple.h"
 #include "types.h"
+#include <algorithm>
 #include <cassert>
+#include <ranges>
+#include <vector>
 
 Ray::Ray(const point_t &origin, const vector_t &direction)
     : origin_(origin), direction_(direction) {
@@ -24,6 +28,37 @@ Ray::intersept(const ShapePtr &sphere) const {
   return sphere->intersept(r);
 }
 
+std::vector<Intersection> Ray::intersept(const World &world) const {
+  auto all = world.objects() | std::views::transform([this](const auto &obj) {
+               return intersections(intersept(obj));
+             }) |
+             std::views::join;
+
+  std::vector<Intersection> xs;
+
+  std::ranges::copy(all, std::back_inserter(xs));
+
+  std::sort(xs.begin(), xs.end());
+  return xs;
+}
+
 Ray Ray::operator*(const Mat44 &m) const {
   return Ray{m * origin_, m * direction_};
+}
+ComputationData Ray::precompute(const Intersection &intersection) const {
+  ComputationData data{};
+
+  data.t = intersection.t();
+  data.object = intersection.object();
+
+  data.point = position(data.t);
+  data.eyeV = -direction();
+  data.normalV = data.object->normalsAt(data.point);
+  if (dotProduct(data.eyeV, data.normalV) < 0.f) {
+    data.inside = true;
+    data.normalV = -data.normalV;
+  } else {
+    data.inside = false;
+  }
+  return data;
 }

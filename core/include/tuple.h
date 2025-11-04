@@ -3,6 +3,7 @@
 #include "matrix.h"
 
 struct Tuple {
+  Tuple() = default;
   Tuple(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
   bool isVector() const;

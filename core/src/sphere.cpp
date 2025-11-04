@@ -38,3 +38,10 @@ vector_t Sphere::normalsAt(const point_t &worldPoint) const {
   worldNormal.w = 0.f;
   return worldNormal.normalize();
 }
+
+bool Sphere::operator==(const Shape &other) const {
+  const Sphere *s = dynamic_cast<const Sphere *>(&other);
+  if (!s)
+    return false; // different types
+  return transformation() == s->transformation() && material() == s->material();
+}

@@ -24,9 +24,17 @@ public:
   Mat44 transformation() const { return transformation_; }
   void setTransformation(const Mat44 &m) { transformation_ = m; }
 
-  Material material() const { return material_; }
+  const Material &material() const { return material_; }
+
+  Material &material() { return material_; }
 
   void setMaterial(const Material &material) { material_ = material; }
+
+  virtual bool operator==(const Shape &other) const = 0;
+  // {
+  //   return transformation() == other.transformation() &&
+  //          material() == other.material();
+  // }
 
 private:
   Mat44 transformation_;

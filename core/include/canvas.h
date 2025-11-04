@@ -10,8 +10,9 @@ class Canvas {
 public:
   Canvas(uint32_t width, uint32_t height);
   Canvas(Canvas const &other) = delete;
+  Canvas(Canvas &&other);
 
-  Color operator()(size_t w, size_t h);
+  Color operator()(size_t w, size_t h) const;
 
   uint32_t width() const;
   uint32_t height() const;

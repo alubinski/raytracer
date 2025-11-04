@@ -7,9 +7,16 @@
 class PointLight {
 public:
   PointLight(const point_t position, const Color intensity);
+  ~PointLight() = default;
+
+  PointLight(const PointLight &other) = default;
+
+  PointLight &operator=(const PointLight &other) = default;
 
   point_t position() const { return position_; }
   Color intensity() const { return intensity_; }
+
+  bool operator==(const PointLight &other) const;
 
 private:
   point_t position_;

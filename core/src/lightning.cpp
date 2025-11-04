@@ -2,9 +2,14 @@
 #include "color.h"
 #include "tuple.h"
 #include <cmath>
+#include <iostream>
 
 PointLight::PointLight(const point_t position, const Color intensity)
     : position_(position), intensity_(intensity) {}
+
+bool PointLight::operator==(const PointLight &other) const {
+  return position_ == other.position() && intensity_ == other.intensity();
+}
 
 Color lightining(const Material &material, const PointLight &light,
                  const point_t &position, const vector_t &eyeVec,
@@ -16,7 +21,7 @@ Color lightining(const Material &material, const PointLight &light,
   const auto lightVec = (light.position() - position).normalize();
 
   // compute the ambient contribution
-  const auto ambient = effectiveColor * material.ambient();
+  const auto ambient = Color(effectiveColor * material.ambient());
 
   // light_dot_normal represents the cosine of the angle between the
   // light vector and the normal vector. A negative number means the
@@ -40,10 +45,11 @@ Color lightining(const Material &material, const PointLight &light,
       specular = Color::black();
     } else {
       // compute the specular contribution
-      const auto factor = std::pow(reflectDotEye, material.shiness());
+      const auto factor = std::powf(reflectDotEye, material.shiness());
       specular = light.intensity() * material.specular() * factor;
     }
   }
   // Add the three contributions together to get the final shading
+
   return ambient + diffuse + specular;
 }

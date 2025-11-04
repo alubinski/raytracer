@@ -102,11 +102,11 @@ public:
     for (size_t i = 0; i < ROWS; ++i) {
       os << "  {";
       for (size_t j = 0; j < COLS; ++j) {
-        if (m(i, j) < epsilon) {
-          os << float(0);
-        } else {
-          os << m(i, j);
-        }
+        // if (m(i, j) < epsilon) {
+        //   os << float(0);
+        // } else {
+        os << m(i, j);
+        // }
         if (j + 1 < COLS)
           os << ", ";
       }

@@ -33,6 +33,14 @@ to_vector(const std::pair<Intersection, Intersection> &p) {
   return {p.first, p.second};
 }
 
+inline std::vector<Intersection>
+to_vector(const std::optional<std::pair<Intersection, Intersection>> &p) {
+  if (p) {
+    return {p->first, p->second};
+  }
+  return {};
+}
+
 template <typename... Args>
 std::vector<Intersection> intersections(const Args &...args) {
   std::vector<Intersection> xs;

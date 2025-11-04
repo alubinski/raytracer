@@ -164,3 +164,40 @@ TEST_CASE("complex transformations") {
     REQUIRE(T * p == Point(15, 0, 7));
   }
 }
+
+TEST_CASE("view matrix") {
+  SECTION("default orientation") {
+    const auto from = Point(0, 0, 0);
+    const auto to = Point(0, 0, -1);
+    const auto up = Vector(0, 1, 0);
+    const auto t = view(from, to, up);
+    REQUIRE(t == Mat44::identity());
+  }
+
+  SECTION("looking in positive z direction") {
+    const auto from = Point(0, 0, 0);
+    const auto to = Point(0, 0, 1);
+    const auto up = Vector(0, 1, 0);
+    const auto t = view(from, to, up);
+    REQUIRE(t == scaling(-1, 1, -1));
+  }
+
+  SECTION("view transformation moves the world") {
+    const auto from = Point(0, 0, 8);
+    const auto to = Point(0, 0, 0);
+    const auto up = Vector(0, 1, 0);
+    const auto t = view(from, to, up);
+    REQUIRE(t == translation(0, 0, -8));
+  }
+
+  SECTION("arbritary orientation") {
+    const auto from = Point(1, 3, 2);
+    const auto to = Point(4, -2, 8);
+    const auto up = Vector(1, 1, 0);
+    const auto t = view(from, to, up);
+    REQUIRE(t == Mat44{{-0.50709, 0.50709, 0.67612, -2.36643},
+                       {0.76772, 0.60609, 0.12122, -2.82843},
+                       {-0.35857, 0.59761, -0.71714, 0.00000},
+                       {0.00000, 0.00000, 0.00000, 1.00000}});
+  }
+}
