@@ -45,7 +45,7 @@ int main() {
         const auto r = Ray(rayOrigin, (position - rayOrigin).normalize());
         const auto xs = r.intersept(sphere);
 
-        if (xs && hit(to_vector(xs.value()))) {
+        if (hit(xs)) {
           canvas.writePixel(x, y, Color(1, 0, 0));
         }
       }

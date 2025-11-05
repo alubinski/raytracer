@@ -49,10 +49,10 @@ int main() {
 
         const auto position = Point(worldX, worldY, wallZ);
         const auto r = Ray(rayOrigin, (position - rayOrigin).normalize());
+        const auto xs = r.intersept(sphere);
 
-        if (const auto xs = r.intersept(sphere)) {
-          const auto xsVec = to_vector(xs.value());
-          if (const auto h = hit(to_vector(xs.value()))) {
+        if (!xs.empty()) {
+          if (const auto h = hit(xs)) {
             const auto point = r.position(h->t());
             const auto normal = h->object()->normalsAt(point);
             const auto eye = -r.direction();

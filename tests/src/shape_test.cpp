@@ -8,15 +8,15 @@
 #include <cmath>
 #include <memory>
 #include <optional>
+#include <vector>
 
 class TestShape : public Shape {
 public:
   TestShape() : Shape(), localRay_(Ray(Point(0, 0, 0), Vector(0, 0, 1))) {}
 
-  std::optional<std::pair<Intersection, Intersection>>
-  intersept(const Ray &ray) const override {
+  std::vector<Intersection> intersept(const Ray &ray) const override {
     localRay_ = ray;
-    return std::nullopt;
+    return {};
   }
 
   vector_t localNormalsAt(const point_t &p) const override {

@@ -4,6 +4,7 @@
 #include "matrix.h"
 #include "tuple.h"
 #include <optional>
+#include <vector>
 
 class Ray;
 class Intersection;
@@ -18,8 +19,7 @@ public:
 
   Shape() : transformation_(Mat44::identity()), material_(Material()) {}
 
-  virtual std::optional<std::pair<Intersection, Intersection>>
-  intersept(const Ray &ray) const = 0;
+  virtual std::vector<Intersection> intersept(const Ray &ray) const = 0;
 
   virtual vector_t localNormalsAt(const point_t &objectPoint) const = 0;
 

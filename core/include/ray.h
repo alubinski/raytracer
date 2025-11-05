@@ -20,8 +20,7 @@ public:
 
   point_t position(float t) const;
 
-  std::optional<std::pair<Intersection, Intersection>>
-  intersept(const ShapePtr &shape) const;
+  std::vector<Intersection> intersept(const ShapePtr &shape) const;
   std::vector<Intersection> intersept(const World &world) const;
 
   Ray operator*(const Mat44 &m) const;

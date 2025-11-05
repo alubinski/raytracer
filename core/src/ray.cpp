@@ -23,15 +23,14 @@ const vector_t &Ray::direction() const { return direction_; }
 
 point_t Ray::position(float t) const { return origin_ + direction_ * t; }
 
-std::optional<std::pair<Intersection, Intersection>>
-Ray::intersept(const ShapePtr &sphere) const {
+std::vector<Intersection> Ray::intersept(const ShapePtr &sphere) const {
   const Ray r = (*this) * sphere->transformation().inverse();
   return sphere->intersept(r);
 }
 
 std::vector<Intersection> Ray::intersept(const World &world) const {
   auto all = world.objects() | std::views::transform([this](const auto &obj) {
-               return intersections(intersept(obj));
+               return intersept(obj);
              }) |
              std::views::join;
 

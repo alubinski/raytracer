@@ -28,57 +28,52 @@ TEST_CASE("ray - intersept") {
     const auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
     const auto s = std::make_shared<Sphere>();
     const auto xs = r.intersept(s);
-    REQUIRE(xs);
-    auto &[xs0, xs1] = *xs;
-    CHECK(xs0.t() == Approx(4.0));
-    CHECK(xs1.t() == Approx(6.0));
+    REQUIRE(xs.size() == 2);
+    CHECK(xs[0].t() == Approx(4.0));
+    CHECK(xs[1].t() == Approx(6.0));
   }
 
   SECTION("sphere - 1 point") {
     const auto r = Ray(Point(0, 1, -5), Vector(0, 0, 1));
     const auto s = std::make_shared<Sphere>();
     const auto xs = r.intersept(s);
-    REQUIRE(xs);
-    auto &[xs0, xs1] = *xs;
-    CHECK(xs0.t() == Approx(5.0));
-    CHECK(xs1.t() == Approx(5.0));
+    REQUIRE(xs.size() == 2);
+    CHECK(xs[0].t() == Approx(5.0));
+    CHECK(xs[1].t() == Approx(5.0));
   }
 
   SECTION("sphere - 0 points") {
     const auto r = Ray(Point(0, 2, -5), Vector(0, 0, 1));
     const auto s = std::make_shared<Sphere>();
     const auto xs = r.intersept(s);
-    REQUIRE_FALSE(xs);
+    REQUIRE(xs.empty());
   }
 
   SECTION("ray origininates inside spher") {
     const auto r = Ray(Point(0, 0, 0), Vector(0, 0, 1));
     const auto s = std::make_shared<Sphere>();
     const auto xs = r.intersept(s);
-    REQUIRE(xs);
-    auto &[xs0, xs1] = *xs;
-    REQUIRE(xs0.t() == Approx(-1.0));
-    REQUIRE(xs1.t() == Approx(1.0));
+    REQUIRE(xs.size() == 2);
+    REQUIRE(xs[0].t() == Approx(-1.0));
+    REQUIRE(xs[1].t() == Approx(1.0));
   }
 
   SECTION("sphere is behind ray") {
     const auto r = Ray(Point(0, 0, 5), Vector(0, 0, 1));
     const auto s = std::make_shared<Sphere>();
     const auto xs = r.intersept(s);
-    REQUIRE(xs);
-    auto &[xs0, xs1] = *xs;
-    REQUIRE(xs0.t() == Approx(-6.0));
-    REQUIRE(xs1.t() == Approx(-4.0));
+    REQUIRE(xs.size() == 2);
+    REQUIRE(xs[0].t() == Approx(-6.0));
+    REQUIRE(xs[1].t() == Approx(-4.0));
   }
 
   SECTION("check object") {
     const auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
     const auto s = std::make_shared<Sphere>();
     const auto xs = r.intersept(s);
-    REQUIRE(xs);
-    auto &[xs0, xs1] = *xs;
-    REQUIRE(xs0.object() == s);
-    REQUIRE(xs1.object() == s);
+    REQUIRE(xs.size() == 2);
+    REQUIRE(xs[0].object() == s);
+    REQUIRE(xs[1].object() == s);
   }
 
   SECTION("with scaled sphere") {
@@ -86,10 +81,9 @@ TEST_CASE("ray - intersept") {
     const auto s = std::make_shared<Sphere>();
     s->setTransformation(scaling(2, 2, 2));
     const auto xs = r.intersept(s);
-    REQUIRE(xs);
-    auto &[xs0, xs1] = *xs;
-    REQUIRE(xs0.t() == Approx(3));
-    REQUIRE(xs1.t() == Approx(7));
+    REQUIRE(xs.size() == 2);
+    REQUIRE(xs[0].t() == Approx(3));
+    REQUIRE(xs[1].t() == Approx(7));
   }
 
   SECTION("with translated sphere") {
@@ -97,7 +91,7 @@ TEST_CASE("ray - intersept") {
     const auto s = std::make_shared<Sphere>();
     s->setTransformation(translation(5, 0, 0));
     const auto xs = r.intersept(s);
-    REQUIRE_FALSE(xs);
+    REQUIRE(xs.empty());
   }
 }
 
