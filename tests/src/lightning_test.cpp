@@ -56,4 +56,13 @@ TEST_CASE("lightning") {
     const auto result = lightining(m, light, position, eyeV, normalV);
     REQUIRE(result == Color(.1f, .1f, .1f));
   }
+
+  SECTION("surface in shadow") {
+    const auto eyeV = Vector(0, 0, -1);
+    const auto normalV = Vector(0, 0, -1);
+    const auto light = PointLight(Point(0, 0, -10), Color(1, 1, 1));
+    const bool inShadow = true;
+    const auto result = lightining(m, light, position, eyeV, normalV, inShadow);
+    REQUIRE(result == Color(.1f, .1f, .1f));
+  }
 }

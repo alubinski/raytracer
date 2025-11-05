@@ -13,7 +13,7 @@ bool PointLight::operator==(const PointLight &other) const {
 
 Color lightining(const Material &material, const PointLight &light,
                  const point_t &position, const vector_t &eyeVec,
-                 const vector_t &normalVec) {
+                 const vector_t &normalVec, bool inShadow) {
   // combine the surface color with the light's color/intensity
   const auto effectiveColor = material.color() * light.intensity();
 
@@ -22,6 +22,9 @@ Color lightining(const Material &material, const PointLight &light,
 
   // compute the ambient contribution
   const auto ambient = Color(effectiveColor * material.ambient());
+  if (inShadow) {
+    return ambient;
+  }
 
   // light_dot_normal represents the cosine of the angle between the
   // light vector and the normal vector. A negative number means the

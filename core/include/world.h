@@ -2,6 +2,7 @@
 
 #include "computation.h"
 #include "lightning.h"
+#include "tuple.h"
 #include "types.h"
 #include <vector>
 
@@ -27,6 +28,8 @@ public:
   Color shadeHit(const ComputationData &comps) const;
 
   Color colorAt(const Ray &r) const;
+
+  bool isShadowed(point_t point) const;
 
   void clear();
   bool isEmpty() const;

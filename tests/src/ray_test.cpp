@@ -150,4 +150,14 @@ TEST_CASE("ray - precompute") {
     REQUIRE(comps.inside);
     REQUIRE(comps.normalV == Vector(0, 0, -1));
   }
+
+  SECTION("hit offsets the point(overPoint)") {
+    const auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
+    auto s = std::make_shared<Sphere>();
+    s->setTransformation(translation(0, 0, 1));
+    const auto i = Intersection(5, s);
+    const auto comps = r.precompute(i);
+    REQUIRE(comps.overPoint.z < -epsilon / 2);
+    REQUIRE(comps.point.z > comps.overPoint.z);
+  }
 }

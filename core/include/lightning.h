@@ -25,4 +25,4 @@ private:
 
 Color lightining(const Material &material, const PointLight &light,
                  const point_t &position, const vector_t &eyeVec,
-                 const vector_t &normalVec);
+                 const vector_t &normalVec, bool inShadow = false);

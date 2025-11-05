@@ -73,5 +73,5 @@ int main() {
   camera.transform() = view(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0));
 
   Canvas canvas = camera.render(w);
-  writeToFile(canvas, "scene.ppm");
+  writeToFile(canvas, "scene_02.ppm");
 }

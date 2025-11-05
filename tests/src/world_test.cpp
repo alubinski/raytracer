@@ -9,6 +9,7 @@
 #include <catch2/catch.hpp>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <string>
 
 TEST_CASE("world - default constructor") {
@@ -67,6 +68,21 @@ TEST_CASE("world - shadeHit()") {
     const auto c = w.shadeHit(comps);
     REQUIRE(c == Color(0.90498, 0.90498, 0.90498));
   }
+
+  SECTION("intersection in shadow") {
+    auto w = World();
+    w.addLight(PointLight(Point(0, 0, -10), Color(1, 1, 1)));
+    const auto s1 = std::make_shared<Sphere>();
+    w.addObject(s1);
+    auto s2 = std::make_shared<Sphere>();
+    s2->setTransformation(translation(0, 0, 10));
+    w.addObject(s2);
+    const auto r = Ray(Point(0, 0, 5), Vector(0, 0, 1));
+    const auto i = Intersection(4, s2);
+    const auto comps = r.precompute(i);
+    const auto c = w.shadeHit(comps);
+    REQUIRE(c == Color(0.1, 0.1, 0.1));
+  }
 }
 
 TEST_CASE("world - colorAt()") {
@@ -93,5 +109,31 @@ TEST_CASE("world - colorAt()") {
     const auto r = Ray(Point(0, 0, 0.75), Vector(0, 0, -1));
     const auto c = w.colorAt(r);
     REQUIRE(c == inner->material().color());
+  }
+}
+
+TEST_CASE("world - isShadowed()") {
+  SECTION("object not collinear with point nor light") {
+    const auto w = World::defaultWorld();
+    const auto p = Point(0, 10, 0);
+    REQUIRE_FALSE(w.isShadowed(p));
+  }
+
+  SECTION("object between point and light") {
+    const auto w = World::defaultWorld();
+    const auto p = Point(10, -10, 10);
+    REQUIRE(w.isShadowed(p));
+  }
+
+  SECTION("object behind the light") {
+    const auto w = World::defaultWorld();
+    const auto p = Point(-20, 20, -20);
+    REQUIRE_FALSE(w.isShadowed(p));
+  }
+
+  SECTION("point between object and light") {
+    const auto w = World::defaultWorld();
+    const auto p = Point(-2, 2, -2);
+    REQUIRE_FALSE(w.isShadowed(p));
   }
 }

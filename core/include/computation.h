@@ -9,6 +9,7 @@ struct ComputationData {
   vector_t eyeV;
   vector_t normalV;
   bool inside;
+  point_t overPoint;
 };
 
 inline std::ostream &operator<<(std::ostream &os, const ComputationData &c) {

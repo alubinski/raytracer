@@ -68,8 +68,10 @@ World World::defaultWorld() {
 Color World::shadeHit(const ComputationData &comps) const {
   Color result{0, 0, 0};
   for (const auto &light : lights_) {
-    result = result + lightining(comps.object->material(), light, comps.point,
-                                 comps.eyeV, comps.normalV);
+    bool shadowed = isShadowed(comps.overPoint);
+    result =
+        result + lightining(comps.object->material(), light, comps.overPoint,
+                            comps.eyeV, comps.normalV, shadowed);
   }
   return result;
 }
@@ -82,4 +84,20 @@ Color World::colorAt(const Ray &r) const {
   }
   const auto comps = r.precompute(h.value());
   return shadeHit(comps);
+}
+
+bool World::isShadowed(point_t point) const {
+  // TO-DO: support multiple light source
+  const auto v = lights_[0].position() - point;
+
+  const auto distance = v.magnitude();
+  const auto direction = v.normalize();
+
+  const Ray r{point, direction};
+  const auto xs = r.intersept(*this);
+  const auto h = hit(xs);
+  if (h && h->t() < distance) {
+    return true;
+  }
+  return false;
 }

@@ -5,6 +5,7 @@
 #include "types.h"
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <ranges>
 #include <vector>
 
@@ -60,5 +61,6 @@ ComputationData Ray::precompute(const Intersection &intersection) const {
   } else {
     data.inside = false;
   }
+  data.overPoint = data.point + data.normalV * epsilon;
   return data;
 }
