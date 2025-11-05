@@ -13,8 +13,9 @@ public:
   Sphere() : Shape() {}
 
   std::optional<std::pair<Intersection, Intersection>>
-  intersept(const Ray &ray) const;
-  vector_t normalsAt(const point_t &worldPoint) const;
+  intersept(const Ray &ray) const override;
+
+  vector_t localNormalsAt(const point_t &objectPoint) const override;
 
   bool operator==(const Shape &other) const override;
 
