@@ -69,9 +69,9 @@ Color World::shadeHit(const ComputationData &comps) const {
   Color result{0, 0, 0};
   for (const auto &light : lights_) {
     bool shadowed = isShadowed(comps.overPoint);
-    result =
-        result + lightining(comps.object->material(), light, comps.overPoint,
-                            comps.eyeV, comps.normalV, shadowed);
+    result = result + lightining(comps.object->material(), comps.object, light,
+                                 comps.overPoint, comps.eyeV, comps.normalV,
+                                 shadowed);
   }
   return result;
 }

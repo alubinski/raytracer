@@ -3,6 +3,7 @@
 #include "color.h"
 #include "pattern.h"
 #include "tuple.h"
+#include "types.h"
 #include <algorithm>
 
 class Material {
@@ -35,7 +36,9 @@ public:
   PatternPtr &pattern() { return pattern_; }
   void setPattern(const PatternPtr &pattern) { pattern_ = pattern; }
 
-  Color colorAt(const point_t &p) const { return pattern_->colorAt(p); }
+  Color colorAt(const ShapeConstPtr &shape, const point_t &p) const {
+    return pattern_->colorAtObject(shape, p);
+  }
 
   bool operator==(const Material &other) const;
   bool operator!=(const Material &other) const;

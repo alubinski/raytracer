@@ -1,22 +1,30 @@
 #pragma once
 #include "color.h"
+#include "matrix.h"
 #include "tuple.h"
 #include "types.h"
 #include <memory>
 
 class Pattern {
 public:
-  using Ptr = std::shared_ptr<Pattern>;
-  using ConstPtr = std::shared_ptr<const Pattern>;
+  Pattern() : transform_(Mat44::identity()) {}
 
   virtual Color colorAt(const point_t &point) const = 0;
-  Color colorAtObject(const ShapeConstPtr &shape, const point_t &point) const;
+  Color colorAtObject(const ShapeConstPtr &shape,
+                      const point_t &worldPoint) const;
   virtual bool operator==(const PatternPtr &other) const = 0;
+
+  const Mat44 &transformation() const { return transform_; }
+  Mat44 &transformation() { return transform_; }
+  void setTransformation(const Mat44 &transform) { transform_ = transform; }
+
+private:
+  Mat44 transform_;
 };
 
 class SolidPattern : public Pattern {
 public:
-  SolidPattern(const Color &color) : color_(color) {}
+  SolidPattern(const Color &color) : Pattern(), color_(color) {}
 
   Color colorAt(const point_t &point) const override;
   bool operator==(const PatternPtr &other) const override;

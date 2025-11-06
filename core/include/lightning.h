@@ -3,6 +3,7 @@
 #include "color.h"
 #include "material.h"
 #include "tuple.h"
+#include "types.h"
 
 class PointLight {
 public:
@@ -23,6 +24,7 @@ private:
   Color intensity_;
 };
 
-Color lightining(const Material &material, const PointLight &light,
-                 const point_t &position, const vector_t &eyeVec,
-                 const vector_t &normalVec, bool inShadow = false);
+Color lightining(const Material &material, const ShapeConstPtr &shape,
+                 const PointLight &light, const point_t &position,
+                 const vector_t &eyeVec, const vector_t &normalVec,
+                 bool inShadow = false);

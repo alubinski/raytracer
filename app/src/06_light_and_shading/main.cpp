@@ -56,8 +56,8 @@ int main() {
             const auto point = r.position(h->t());
             const auto normal = h->object()->normalsAt(point);
             const auto eye = -r.direction();
-            const auto color =
-                lightining(h->object()->material(), light, point, eye, normal);
+            const auto color = lightining(h->object()->material(), h->object(),
+                                          light, point, eye, normal);
             canvas.writePixel(x, y, color);
           }
         }

@@ -1,7 +1,15 @@
 #include "pattern.h"
+#include "shape.h"
 #include "tuple.h"
 #include <cmath>
 #include <memory>
+
+Color Pattern::colorAtObject(const ShapeConstPtr &shape,
+                             const point_t &worldPoint) const {
+  const point_t objectPoint = shape->transformation().inverse() * worldPoint;
+  const point_t patternPoint = transformation().inverse() * objectPoint;
+  return colorAt(patternPoint);
+}
 
 Color SolidPattern::colorAt(const point_t &point) const { return color_; }
 

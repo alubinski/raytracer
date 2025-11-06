@@ -1,6 +1,7 @@
 #include "lightning.h"
 #include "color.h"
 #include "tuple.h"
+#include "types.h"
 #include <cmath>
 #include <iostream>
 
@@ -11,11 +12,13 @@ bool PointLight::operator==(const PointLight &other) const {
   return position_ == other.position() && intensity_ == other.intensity();
 }
 
-Color lightining(const Material &material, const PointLight &light,
-                 const point_t &position, const vector_t &eyeVec,
-                 const vector_t &normalVec, bool inShadow) {
+Color lightining(const Material &material, const ShapeConstPtr &shape,
+                 const PointLight &light, const point_t &position,
+                 const vector_t &eyeVec, const vector_t &normalVec,
+                 bool inShadow) {
   // combine the surface color with the light's color/intensity
-  const auto effectiveColor = material.colorAt(position) * light.intensity();
+  const auto effectiveColor =
+      material.colorAt(shape, position) * light.intensity();
 
   // find the direction to the light source
   const auto lightVec = (light.position() - position).normalize();
