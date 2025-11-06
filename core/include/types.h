@@ -1,7 +1,10 @@
 #pragma once
+#include <memory>
 
-#include "matrix.h"
-#include "shape.h"
+class Shape;
+using ShapePtr = std::shared_ptr<Shape>;
+using ShapeConstPtr = std::shared_ptr<const Shape>;
 
-using ShapePtr = Shape::Ptr;
-using ShapeConstPtr = Shape::ConstPtr;
+class Pattern;
+using PatternPtr = std::shared_ptr<Pattern>;
+using PatternConstPtr = std::shared_ptr<const Pattern>;

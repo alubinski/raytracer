@@ -3,20 +3,15 @@
 #include "material.h"
 #include "matrix.h"
 #include "tuple.h"
-#include <optional>
 #include <vector>
 
 class Ray;
 class Intersection;
+class Material;
 
 #include <memory>
 class Shape : public std::enable_shared_from_this<Shape> {
 public:
-  using Ptr = std::shared_ptr<Shape>;
-  using ConstPtr = std::shared_ptr<const Shape>;
-  using UPtr = std::unique_ptr<Shape>;
-  using ConstUPtr = std::unique_ptr<const Shape>;
-
   Shape() : transformation_(Mat44::identity()), material_(Material()) {}
 
   virtual std::vector<Intersection> intersept(const Ray &ray) const = 0;

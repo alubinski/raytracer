@@ -1,14 +1,16 @@
-
+#pragma once
 #include "color.h"
 #include "tuple.h"
+#include "types.h"
 #include <memory>
-
-class Pattern;
-using PatternPtr = std::shared_ptr<Pattern>;
 
 class Pattern {
 public:
+  using Ptr = std::shared_ptr<Pattern>;
+  using ConstPtr = std::shared_ptr<const Pattern>;
+
   virtual Color colorAt(const point_t &point) const = 0;
+  Color colorAtObject(const ShapeConstPtr &shape, const point_t &point) const;
   virtual bool operator==(const PatternPtr &other) const = 0;
 };
 

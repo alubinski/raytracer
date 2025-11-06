@@ -6,6 +6,8 @@
 #include "types.h"
 #include <vector>
 
+class Ray;
+
 class World {
 public:
   World() = default;
