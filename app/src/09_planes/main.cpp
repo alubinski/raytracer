@@ -9,6 +9,7 @@
 #include "world.h"
 #include <cmath>
 #include <fstream>
+#include <iostream>
 #include <memory>
 
 void writeToFile(const Canvas &c, std::string filename) {
@@ -21,49 +22,68 @@ void writeToFile(const Canvas &c, std::string filename) {
 
 int main() {
   auto floor = std::make_shared<Plane>();
-  // floor->setTransformation(scaling(10, 0.01, 10));
-  // floor->setMaterial(Material());
-  // floor->material().setColor(Color(1, 0.9, 0.9));
-  // floor->material().setSpecular(0.f);
+  {
+    auto &material = floor->material();
+    material.setColor({1.f, .9f, .9f});
+    material.setSpecular(0.f);
+  }
 
-  auto wall = std::make_shared<Plane>();
-  wall->setTransformation(translation(0, 0, 3) * rotationX(M_PI / 2));
+  auto roof = std::make_shared<Plane>();
+  {
+    auto &transformation = roof->transformation();
+    transformation = translation(0, 10, 0);
+    auto &material = roof->material();
+    material.setColor({.2f, .9f, .1f});
+    material.setSpecular(.1f);
+  }
+
   auto middle = std::make_shared<Sphere>();
-  middle->setTransformation(translation(-0.5, 1, 0.5));
-  middle->setMaterial(Material());
-  middle->material().setColor(Color(0.1, 1, 0.5));
-  middle->material().setDiffuse(0.7);
-  middle->material().setSpecular(0.3);
+  {
+
+    auto &transformation = middle->transformation();
+    transformation = translation(-.5f, 1.f, .5f);
+    auto &material = middle->material();
+    material.setColor({.1, .1, .5});
+    material.setDiffuse(.7f);
+    material.setSpecular(.3f);
+  }
 
   auto right = std::make_shared<Sphere>();
-  right->setTransformation(translation(1.5, -0.25, 0.75) *
-                           scaling(0.5, 0.5, 0.5));
-  right->setMaterial(Material());
-  right->material().setColor(Color(0.5, 1, 0.1));
-  right->material().setDiffuse(0.7);
-  right->material().setSpecular(0.3);
+  {
+    auto &transformation = right->transformation();
+    transformation = translation(1.5f, .5f, -.5f) * scaling(.5f, .5f, .5f);
+    auto &material = right->material();
+    material.setColor({.5, .1, .1});
+    material.setDiffuse(.7f);
+    material.setSpecular(.3f);
+  }
 
   auto left = std::make_shared<Sphere>();
-  left->setTransformation(translation(-1.5, 0.33, -0.75) *
-                          scaling(0.33, 0.33, 0.33));
-  left->setMaterial(Material());
-  left->material().setColor(Color(1, 0.8, 0.1));
-  left->material().setDiffuse(0.7);
-  left->material().setSpecular(0.3);
+  {
+    auto &transformation = left->transformation();
+    transformation =
+        translation(-1.5f, .33f, -.75f) * scaling(.33f, .33f, .33f);
+    auto &material = left->material();
+    material.setColor({1.f, .8f, .1});
+    material.setDiffuse(.7f);
+    material.setSpecular(.3f);
+  }
 
   World w{};
 
   w.addObject(floor);
-  // w.addObject(wall);
+  w.addObject(roof);
   w.addObject(middle);
   w.addObject(left);
   w.addObject(right);
 
-  w.addLight(PointLight(Point(-10, 10, -10), Color(1, 1, 1)));
+  w.addLight(PointLight(Point(-5, 5, -2), Color(1, 1, 1)));
 
-  Camera camera(100, 50, M_PI / 3);
-  camera.transform() = view(Point(3, 5, -4), Point(0, 1, 0), Vector(0, 1, 0));
+  Camera camera(800, 600, M_PI / 3.f);
+  camera.transform() =
+      view(Point(5, 2.5, -5), Point(-3, 2.2f, 0), Vector(0, 1, 0));
 
+  std::cout << "hsize: " << camera.hsize() << "\nvsize: " << camera.vsize();
   Canvas canvas = camera.render(w);
   writeToFile(canvas, "plane.ppm");
 }
