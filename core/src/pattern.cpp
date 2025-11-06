@@ -81,6 +81,19 @@ Color RingPattern::colorAt(const point_t &point) const {
                                                : patternBColorAt(point);
 }
 
+bool CheckerPattern::operator==(const PatternPtr &other) const {
+  auto o = std::dynamic_pointer_cast<CheckerPattern>(other);
+  return o && BinaryPattern::operator==(other);
+}
+
+Color CheckerPattern::colorAt(const point_t &point) const {
+  int const x = static_cast<int>(std::floor(point.x));
+  int const y = static_cast<int>(std::floor(point.y));
+  int const z = static_cast<int>(std::floor(point.z));
+
+  return (x + y + z) % 2 == 0 ? patternAColorAt(point) : patternBColorAt(point);
+}
+
 bool RingPattern::operator==(const PatternPtr &other) const {
   auto o = std::dynamic_pointer_cast<RingPattern>(other);
   return o && BinaryPattern::operator==(other);

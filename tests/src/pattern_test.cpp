@@ -127,3 +127,26 @@ TEST_CASE("ring pattern - colorAt()") {
   REQUIRE(pattern.colorAt(Point(0.f, 0.f, 1.f)) == Color::black());
   REQUIRE(pattern.colorAt(Point(.708f, 0.f, .708f)) == Color::black());
 }
+
+TEST_CASE("checked pattern - colorAt()") {
+  SECTION("checkers should repeat in x") {
+    const auto pattern = CheckerPattern(Color::white(), Color::black());
+    REQUIRE(pattern.colorAt(Point(0.f, 0.f, 0.f)) == Color::white());
+    REQUIRE(pattern.colorAt(Point(.99f, 0.f, 0.f)) == Color::white());
+    REQUIRE(pattern.colorAt(Point(1.01f, 0.f, 0.f)) == Color::black());
+  }
+
+  SECTION("checkers should repeat in y") {
+    const auto pattern = CheckerPattern(Color::white(), Color::black());
+    REQUIRE(pattern.colorAt(Point(0.f, 0.f, 0.f)) == Color::white());
+    REQUIRE(pattern.colorAt(Point(0.f, .99f, 0.f)) == Color::white());
+    REQUIRE(pattern.colorAt(Point(0.f, 1.01f, 0.f)) == Color::black());
+  }
+
+  SECTION("checkers should repeat in y") {
+    const auto pattern = CheckerPattern(Color::white(), Color::black());
+    REQUIRE(pattern.colorAt(Point(0.f, 0.f, 0.f)) == Color::white());
+    REQUIRE(pattern.colorAt(Point(0.f, 0.f, .99f)) == Color::white());
+    REQUIRE(pattern.colorAt(Point(0.f, 0.f, 1.01f)) == Color::black());
+  }
+}
