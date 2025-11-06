@@ -34,6 +34,16 @@ private:
   Color color_;
 };
 
+class PerlinNoisePattern : public Pattern {
+public:
+  PerlinNoisePattern(PatternPtr pattern) : pattern_(pattern) {}
+  Color colorAt(const point_t &point) const override;
+  bool operator==(const PatternPtr &other) const override;
+
+private:
+  PatternPtr pattern_;
+};
+
 class BinaryPattern : public Pattern {
 public:
   BinaryPattern(PatternPtr patternA, PatternPtr patternB)
@@ -65,5 +75,7 @@ DECLARE_BINARY_PATTERN(StripePattern)
 DECLARE_BINARY_PATTERN(GradientPattern)
 DECLARE_BINARY_PATTERN(RingPattern)
 DECLARE_BINARY_PATTERN(CheckerPattern)
+DECLARE_BINARY_PATTERN(RadialGradientPattern)
+DECLARE_BINARY_PATTERN(BlendPattern)
 
 #undef DECLARE_BINARY_PATTERN
