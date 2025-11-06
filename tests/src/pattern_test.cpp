@@ -6,6 +6,53 @@
 #include <catch2/catch.hpp>
 #include <memory>
 
+class TestPattern : public Pattern {
+  Color colorAt(const point_t &point) const override {
+    return Color(point.x, point.y, point.z);
+  }
+  bool operator==(PatternPtr const &other) const override {
+    return std::dynamic_pointer_cast<TestPattern>(other) != nullptr;
+  }
+};
+
+TEST_CASE("pattern - transformation()") {
+  const auto pattern = TestPattern();
+  REQUIRE(pattern.transformation() == Mat44::identity());
+}
+
+TEST_CASE("pattern - setTransformation()") {
+  auto pattern = TestPattern();
+  pattern.setTransformation(translation(1, 2, 3));
+  REQUIRE(pattern.transformation() == translation(1, 2, 3));
+}
+
+TEST_CASE("pattern - colorAtObject") {
+  SECTION("with object transformation") {
+    auto shape = std::make_shared<Sphere>();
+    shape->transformation() = scaling(2, 2, 2);
+    const auto pattern = TestPattern();
+    const auto c = pattern.colorAtObject(shape, Point(2, 3, 4));
+    REQUIRE(c == Color(1, 1.5, 2));
+  }
+
+  SECTION("with pattern transformation") {
+    const auto shape = std::make_shared<Sphere>();
+    auto pattern = TestPattern();
+    pattern.transformation() = scaling(2, 2, 2);
+    const auto c = pattern.colorAtObject(shape, Point(2, 3, 4));
+    REQUIRE(c == Color(1, 1.5, 2));
+  }
+
+  SECTION("with object and pattern transformation") {
+    auto shape = std::make_shared<Sphere>();
+    shape->transformation() = scaling(2, 2, 2);
+    auto pattern = TestPattern();
+    pattern.transformation() = translation(.5f, 1.f, 1.5f);
+    const auto c = pattern.colorAtObject(shape, Point(2.5f, 3.f, 3.5f));
+    REQUIRE(c == Color(.75f, .5f, .25f));
+  }
+}
+
 TEST_CASE("stripe pattern - constructor") {
   const auto pattern = StripePattern(Color::white(), Color::black());
   REQUIRE(pattern.colorA() == Color::white());
