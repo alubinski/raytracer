@@ -32,8 +32,11 @@ Ray Camera::rayForPixel(uint32_t x, uint32_t y) const {
   //  using the camera matrix, transform the canvas point and the origin,
   // and then compute the ray's direction vector.
   // (remember that th e canvas is at z=-1)
-  const auto pixel = transform().inverse() * Point(worldX, worldY, -1);
-  const auto origin = transform().inverse() * Point(0, 0, 0);
+  auto pixel = transform().inverse() * Point(worldX, worldY, -1);
+  pixel.w = 1;
+  auto origin = transform().inverse() * Point(0, 0, 0);
+  origin.w = 1;
+
   const auto direction = (pixel - origin).normalize();
 
   return Ray(origin, direction);
@@ -41,6 +44,7 @@ Ray Camera::rayForPixel(uint32_t x, uint32_t y) const {
 
 Canvas Camera::render(const World &world) const {
   Canvas image(hSize_, vSize_);
+  // Canvas image(vSize_, hSize_);
 
   for (uint32_t y = 0; y < vSize_; ++y) {
     for (uint32_t x = 0; x < hSize_; ++x) {

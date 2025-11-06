@@ -15,7 +15,7 @@ Color lightining(const Material &material, const PointLight &light,
                  const point_t &position, const vector_t &eyeVec,
                  const vector_t &normalVec, bool inShadow) {
   // combine the surface color with the light's color/intensity
-  const auto effectiveColor = material.color() * light.intensity();
+  const auto effectiveColor = material.colorAt(position) * light.intensity();
 
   // find the direction to the light source
   const auto lightVec = (light.position() - position).normalize();

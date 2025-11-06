@@ -39,6 +39,7 @@ public:
   Mat44 transformation() const { return transformation_; }
   void setTransformation(const Mat44 &m) { transformation_ = m; }
 
+  Mat44 &transformation() { return transformation_; }
   const Material &material() const { return material_; }
 
   Material &material() { return material_; }
