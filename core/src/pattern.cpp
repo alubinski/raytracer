@@ -52,6 +52,21 @@ Color StripePattern::colorAt(const point_t &point) const {
                                         : patternAColorAt(point);
 }
 
+bool GradientPattern::operator==(const PatternPtr &other) const {
+  auto o = std::dynamic_pointer_cast<GradientPattern>(other);
+  return o && BinaryPattern::operator==(other);
+}
+
+Color GradientPattern::colorAt(const point_t &point) const {
+  const auto gradientA = patternAColorAt(point);
+  const auto gradientB = patternBColorAt(point);
+
+  const auto distance = gradientB - gradientA;
+  const auto fraction = point.x - std::floor(point.x);
+
+  return gradientA + Color(distance * fraction);
+}
+
 bool StripePattern::operator==(const PatternPtr &other) const {
   auto o = std::dynamic_pointer_cast<StripePattern>(other);
   return o && BinaryPattern::operator==(other);

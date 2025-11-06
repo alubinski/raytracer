@@ -111,3 +111,11 @@ TEST_CASE("pattern - colorAtObject()") {
     REQUIRE(c == Color::white());
   }
 }
+
+TEST_CASE("gradient pattern - colorAt()") {
+  const auto pattern = GradientPattern(Color::white(), Color::black());
+  REQUIRE(pattern.colorAt(Point(0.f, 0.f, 0.f)) == Color::white());
+  REQUIRE(pattern.colorAt(Point(.25f, 0.f, 0.f)) == Color(.75, .75f, .75f));
+  REQUIRE(pattern.colorAt(Point(.5f, 0.f, 0.f)) == Color(.5, .5f, .5f));
+  REQUIRE(pattern.colorAt(Point(.75f, 0.f, 0.f)) == Color(.25, .25f, .25f));
+}

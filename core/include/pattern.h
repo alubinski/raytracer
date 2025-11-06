@@ -62,5 +62,6 @@ private:
   };
 
 DECLARE_BINARY_PATTERN(StripePattern)
+DECLARE_BINARY_PATTERN(GradientPattern)
 
 #undef DECLARE_BINARY_PATTERN
