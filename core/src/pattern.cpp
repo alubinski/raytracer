@@ -71,3 +71,17 @@ bool StripePattern::operator==(const PatternPtr &other) const {
   auto o = std::dynamic_pointer_cast<StripePattern>(other);
   return o && BinaryPattern::operator==(other);
 }
+
+Color RingPattern::colorAt(const point_t &point) const {
+  const float x2 = point.x * point.x;
+  const float z2 = point.z * point.z;
+
+  const float magnitude = std::sqrt(x2 + z2);
+  return ((int)std::floor(magnitude) % 2) == 0 ? patternAColorAt(point)
+                                               : patternBColorAt(point);
+}
+
+bool RingPattern::operator==(const PatternPtr &other) const {
+  auto o = std::dynamic_pointer_cast<RingPattern>(other);
+  return o && BinaryPattern::operator==(other);
+}

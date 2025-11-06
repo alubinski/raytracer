@@ -119,3 +119,11 @@ TEST_CASE("gradient pattern - colorAt()") {
   REQUIRE(pattern.colorAt(Point(.5f, 0.f, 0.f)) == Color(.5, .5f, .5f));
   REQUIRE(pattern.colorAt(Point(.75f, 0.f, 0.f)) == Color(.25, .25f, .25f));
 }
+
+TEST_CASE("ring pattern - colorAt()") {
+  const auto pattern = RingPattern(Color::white(), Color::black());
+  REQUIRE(pattern.colorAt(Point(0.f, 0.f, 0.f)) == Color::white());
+  REQUIRE(pattern.colorAt(Point(1.f, 0.f, 0.f)) == Color::black());
+  REQUIRE(pattern.colorAt(Point(0.f, 0.f, 1.f)) == Color::black());
+  REQUIRE(pattern.colorAt(Point(.708f, 0.f, .708f)) == Color::black());
+}
