@@ -12,6 +12,9 @@ TEST_CASE("material - default constructor") {
   REQUIRE(m.diffuse() == Approx(0.9f));
   REQUIRE(m.specular() == Approx(0.9f));
   REQUIRE(m.shiness() == Approx(200.f));
+  REQUIRE(m.reflective() == Approx(0.f));
+  REQUIRE(m.transparency() == Approx(0.f));
+  REQUIRE(m.reflectiveIndex() == Approx(1.f));
 }
 
 TEST_CASE("lightning with pattern applied") {

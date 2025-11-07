@@ -6,6 +6,8 @@
 #include "sphere.h"
 #include "transformations.h"
 #include "tuple.h"
+#include <cmath>
+#include <cstdint>
 #include <iostream>
 
 void World::addObject(const ShapePtr &object) { objects_.push_back(object); }
@@ -65,25 +67,61 @@ World World::defaultWorld() {
   return w;
 }
 
-Color World::shadeHit(const ComputationData &comps) const {
+Color World::shadeHit(const ComputationData &comps,
+                      uint8_t recursion_limit) const {
   Color result{0, 0, 0};
   for (const auto &light : lights_) {
     bool shadowed = isShadowed(comps.overPoint);
-    result = result + lightining(comps.object->material(), comps.object, light,
-                                 comps.overPoint, comps.eyeV, comps.normalV,
-                                 shadowed);
+    result = result +
+             lightining(comps.object->material(), comps.object, light,
+                        comps.overPoint, comps.eyeV, comps.normalV, shadowed) +
+             reflectedColor(comps, recursion_limit) +
+             reflactedColor(comps, recursion_limit);
   }
   return result;
 }
 
-Color World::colorAt(const Ray &r) const {
+Color World::reflectedColor(const ComputationData &comps,
+                            uint8_t recursion_limit) const {
+  if (comps.object->material().reflective() == 0.f || recursion_limit == 0) {
+    return Color(0, 0, 0);
+  }
+
+  const Ray reflectRay{comps.overPoint, comps.reflectiveV};
+  return colorAt(reflectRay, --recursion_limit) *
+         comps.object->material().reflective();
+}
+
+Color World::reflactedColor(const ComputationData &comps,
+                            uint8_t recursionLimit) const {
+  if (comps.object->material().transparency() == 0.f || recursionLimit == 0) {
+    return Color::black();
+  }
+  const float n_ratio = comps.n1 / comps.n2;
+  const float cos_i = dotProduct(comps.eyeV, comps.normalV);
+
+  const float sin2_t = n_ratio * n_ratio * (1.f - cos_i * cos_i);
+  if (sin2_t > 1.f) {
+    return Color::black();
+  }
+
+  const float cos_t = std::sqrt(1.0f - sin2_t);
+  const vector_t direction =
+      comps.normalV * (n_ratio * cos_i - cos_t) - comps.eyeV * n_ratio;
+
+  const Ray reflectedRay{comps.underPoint, direction};
+  return colorAt(reflectedRay, recursionLimit - 1) *
+         comps.object->material().transparency();
+}
+
+Color World::colorAt(const Ray &r, uint8_t recursion_limit) const {
   const auto xs = r.intersept(*this);
   const auto h = hit(xs);
   if (!h.has_value()) {
     return Color(0, 0, 0);
   }
-  const auto comps = r.precompute(h.value());
-  return shadeHit(comps);
+  const auto comps = r.precompute(h.value(), xs);
+  return shadeHit(comps, recursion_limit);
 }
 
 bool World::isShadowed(point_t point) const {

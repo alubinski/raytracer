@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <optional>
 #include <ranges>
 #include <vector>
 
@@ -45,7 +46,10 @@ std::vector<Intersection> Ray::intersept(const World &world) const {
 Ray Ray::operator*(const Mat44 &m) const {
   return Ray{m * origin_, m * direction_};
 }
-ComputationData Ray::precompute(const Intersection &intersection) const {
+
+ComputationData
+Ray::precompute(const Intersection &intersection,
+                std::optional<std::vector<Intersection>> xs) const {
   ComputationData data{};
 
   data.t = intersection.t();
@@ -61,5 +65,30 @@ ComputationData Ray::precompute(const Intersection &intersection) const {
     data.inside = false;
   }
   data.overPoint = data.point + data.normalV * epsilon;
+  data.underPoint = data.point - data.normalV * epsilon;
+  data.reflectiveV = direction().reflect(data.normalV);
+
+  std::vector<ShapeConstPtr> containers;
+  for (const auto &curr : xs.value_or(std::vector<Intersection>{})) {
+    if (curr == intersection) {
+      data.n1 = (containers.empty())
+                    ? 1.f
+                    : containers.back()->material().reflectiveIndex();
+    }
+
+    auto it = std::find(containers.begin(), containers.end(), curr.object());
+    if (it != containers.end()) {
+      containers.erase(it);
+    } else {
+      containers.push_back(curr.object());
+    }
+
+    if (curr == intersection) {
+      data.n2 = (containers.empty())
+                    ? 1.f
+                    : containers.back()->material().reflectiveIndex();
+    }
+  }
+
   return data;
 }

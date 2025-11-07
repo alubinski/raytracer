@@ -4,6 +4,7 @@
 #include "lightning.h"
 #include "tuple.h"
 #include "types.h"
+#include <cstdint>
 #include <vector>
 
 class Ray;
@@ -27,9 +28,16 @@ public:
   std::vector<PointLight> &lights() { return lights_; }
   bool containsLight(const PointLight &light) const;
 
-  Color shadeHit(const ComputationData &comps) const;
+  Color shadeHit(const ComputationData &comps,
+                 uint8_t recursionLimit = 4u) const;
 
-  Color colorAt(const Ray &r) const;
+  Color reflectedColor(const ComputationData &comps,
+                       uint8_t recursionLimit = 4u) const;
+
+  Color reflactedColor(const ComputationData &comps,
+                       uint8_t recursionLimit = 4u) const;
+
+  Color colorAt(const Ray &r, uint8_t recursionLimit = 4u) const;
 
   bool isShadowed(point_t point) const;
 

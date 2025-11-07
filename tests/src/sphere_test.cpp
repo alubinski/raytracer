@@ -51,3 +51,10 @@ TEST_CASE("sphere - normalsAt") {
     REQUIRE(n == Vector(0, 0.97014f, -0.24254f));
   }
 }
+
+TEST_CASE("glass sphere") {
+  const auto s = Sphere::GlassSphere();
+  REQUIRE(s.transformation() == Mat44::identity());
+  REQUIRE(s.material().transparency() == Approx(1.f));
+  REQUIRE(s.material().reflectiveIndex() == Approx(1.5f));
+}

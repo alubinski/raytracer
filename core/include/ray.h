@@ -25,7 +25,10 @@ public:
 
   Ray operator*(const Mat44 &m) const;
 
-  ComputationData precompute(const Intersection &intersection) const;
+  // ComputationData precompute(const Intersection &intersection) const;
+  ComputationData
+  precompute(const Intersection &intersection,
+             std::optional<std::vector<Intersection>> xs = std::nullopt) const;
 
 private:
   point_t origin_;

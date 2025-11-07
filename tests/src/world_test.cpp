@@ -1,16 +1,27 @@
 #include "color.h"
 #include "intersection.h"
 #include "lightning.h"
+#include "plane.h"
 #include "ray.h"
 #include "sphere.h"
 #include "transformations.h"
 #include "tuple.h"
 #include "world.h"
 #include <catch2/catch.hpp>
+#include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>
+
+class TestPattern : public Pattern {
+  Color colorAt(const point_t &point) const override {
+    return Color(point.x, point.y, point.z);
+  }
+  bool operator==(PatternPtr const &other) const override {
+    return std::dynamic_pointer_cast<TestPattern>(other) != nullptr;
+  }
+};
 
 TEST_CASE("world - default constructor") {
   const auto w = World();
@@ -83,6 +94,40 @@ TEST_CASE("world - shadeHit()") {
     const auto c = w.shadeHit(comps);
     REQUIRE(c == Color(0.1, 0.1, 0.1));
   }
+
+  SECTION("with reflective material") {
+    auto w = World::defaultWorld();
+    auto shape = std::make_shared<Plane>();
+    shape->material().setReflective(0.5f);
+    shape->transformation() = translation(0, -1, 0);
+    w.addObject(shape);
+    const auto r =
+        Ray(Point(0, 0, -3), Vector(0, -std::sqrt(2) / 2, std::sqrt(2) / 2));
+    const auto i = Intersection(std::sqrt(2), shape);
+    const auto comps = r.precompute(i);
+    const auto color = w.shadeHit(comps);
+    REQUIRE(color == Color(0.87677, 0.92436, 0.82918));
+  }
+
+  SECTION("with transpalent material") {
+    auto w = World::defaultWorld();
+    auto floor = std::make_shared<Plane>();
+    floor->transformation() = translation(0, -1, 0);
+    floor->material().setTransparency(.5f);
+    floor->material().setReflectiveIndex(1.5f);
+    w.addObject(floor);
+    auto ball = std::make_shared<Sphere>();
+    ball->material().setColor(Color(1, 0, 0));
+    ball->material().setAmbient(0.5);
+    ball->transformation() = translation(0, -3.5, -0.5);
+    w.addObject(ball);
+    const auto r =
+        Ray(Point(0, 0, -3), Vector(0, -std::sqrt(2) / 2, std::sqrt(2) / 2));
+    const auto xs = intersections(Intersection(std::sqrt(2), floor));
+    const auto comps = r.precompute(xs[0], xs);
+    const auto color = w.shadeHit(comps);
+    REQUIRE(color == Color(0.93642, 0.68642, 0.68642));
+  }
 }
 
 TEST_CASE("world - colorAt()") {
@@ -110,6 +155,21 @@ TEST_CASE("world - colorAt()") {
     const auto c = w.colorAt(r);
     REQUIRE(c == inner->material().color());
   }
+
+  SECTION("colorAt() terminates succesfully") {
+    auto w = World();
+    w.addLight(PointLight(Point(0, 0, 0), Color(1, 1, 1)));
+    auto lower = std::make_shared<Plane>();
+    lower->material().setReflective(1);
+    lower->transformation() = translation(0, -1, 0);
+    auto upper = std::make_shared<Plane>();
+    upper->material().setReflective(1);
+    upper->transformation() = translation(0, 1, 0);
+    w.addObject(lower);
+    w.addObject(upper);
+    const auto r = Ray(Point(0, 0, 1), Vector(0, 1, 0));
+    REQUIRE(w.colorAt(r) != Color::black());
+  }
 }
 
 TEST_CASE("world - isShadowed()") {
@@ -135,5 +195,104 @@ TEST_CASE("world - isShadowed()") {
     const auto w = World::defaultWorld();
     const auto p = Point(-2, 2, -2);
     REQUIRE_FALSE(w.isShadowed(p));
+  }
+}
+
+TEST_CASE("world - reflectedColor()") {
+  SECTION("nonreflective material") {
+    auto w = World::defaultWorld();
+    auto shape = w.objects()[1];
+    shape->material().setAmbient(1.f);
+    const auto r = Ray(Point(0, 0, 1), Vector(0, 0, 1));
+    const auto i = Intersection(1, shape);
+    const auto comps = r.precompute(i);
+    const auto color = w.reflectedColor(comps);
+    REQUIRE(color == Color(0, 0, 0));
+  }
+
+  SECTION("reflective material") {
+    auto w = World::defaultWorld();
+    auto shape = std::make_shared<Plane>();
+    shape->material().setReflective(0.5f);
+    shape->transformation() = translation(0, -1, 0);
+    w.addObject(shape);
+    const auto r =
+        Ray(Point(0, 0, -3), Vector(0, -std::sqrt(2) / 2, std::sqrt(2) / 2));
+    const auto i = Intersection(std::sqrt(2), shape);
+    const auto comps = r.precompute(i);
+    const auto color = w.reflectedColor(comps);
+    REQUIRE(color == Color(0.19032, 0.2379, 0.14274));
+  }
+
+  SECTION("recursion limited") {
+    auto w = World::defaultWorld();
+    auto shape = std::make_shared<Plane>();
+    shape->material().setReflective(0.5f);
+    shape->transformation() = translation(0, -1, 0);
+    w.addObject(shape);
+    const auto r =
+        Ray(Point(0, 0, -3), Vector(0, -std::sqrt(2) / 2, std::sqrt(2) / 2));
+    const auto i = Intersection(std::sqrt(2), shape);
+    const auto comps = r.precompute(i);
+    const auto color = w.reflectedColor(comps, 0);
+    REQUIRE(color == Color::black());
+  }
+}
+
+TEST_CASE("world - reflactedColor()") {
+  SECTION("opaque surface") {
+    const auto w = World::defaultWorld();
+    const auto shape = w.objects()[0];
+    const auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
+    const auto xs =
+        intersections(Intersection{4, shape}, Intersection{6, shape});
+    const auto comps = r.precompute(xs[0], xs);
+    const auto c = w.reflactedColor(comps, 5);
+    REQUIRE(c == Color::black());
+  }
+
+  SECTION("maximum recursive depth") {
+    auto w = World::defaultWorld();
+    auto &shape = w.objects()[0];
+    shape->material().setTransparency(1.0f);
+    shape->material().setReflectiveIndex(1.5f);
+    const auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
+    const auto xs =
+        intersections(Intersection{4, shape}, Intersection{6, shape});
+    const auto comps = r.precompute(xs[0], xs);
+    const auto c = w.reflactedColor(comps, 0);
+    REQUIRE(c == Color::black());
+  }
+
+  SECTION("under total internal reflection") {
+    auto w = World::defaultWorld();
+    auto &shape = w.objects()[0];
+    shape->material().setTransparency(1.0f);
+    shape->material().setReflectiveIndex(1.5f);
+    const auto r = Ray(Point(0, 0, std::sqrt(2) / 2), Vector(0, 1, 0));
+    const auto xs = intersections(
+        Intersection{static_cast<float>(-std::sqrt(2) / 2), shape},
+        Intersection{static_cast<float>(std::sqrt(2) / 2), shape});
+    const auto comps = r.precompute(xs[1], xs);
+    const auto c = w.reflactedColor(comps, 5);
+    REQUIRE(c == Color::black());
+  }
+
+  SECTION("with reflacted ray") {
+    auto w = World::defaultWorld();
+    auto &A = w.objects()[0];
+    A->material().setAmbient(1.0f);
+    const auto pattern = std::make_shared<TestPattern>();
+    A->material().setPattern(pattern);
+    auto &B = w.objects()[1];
+    B->material().setTransparency(1.f);
+    B->material().setReflectiveIndex(1.5f);
+    const auto r = Ray(Point(0, 0, 0.1), Vector(0, 1, 0));
+    const auto xs =
+        intersections(Intersection(-0.9899, A), Intersection(-0.4899, B),
+                      Intersection(0.4899, B), Intersection(0.9899, A));
+    const auto comps = r.precompute(xs[2], xs);
+    const auto c = w.reflactedColor(comps, 5);
+    REQUIRE(c == Color(0, 0.99888, 0.04725));
   }
 }

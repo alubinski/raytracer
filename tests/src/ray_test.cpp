@@ -1,10 +1,12 @@
 #include "intersection.h"
 #include "matrix.h"
+#include "plane.h"
 #include "ray.h"
 #include "sphere.h"
 #include "transformations.h"
 #include "tuple.h"
 #include <catch2/catch.hpp>
+#include <cmath>
 #include <memory>
 
 TEST_CASE("ray - constructor") {
@@ -153,5 +155,53 @@ TEST_CASE("ray - precompute") {
     const auto comps = r.precompute(i);
     REQUIRE(comps.overPoint.z < -epsilon / 2);
     REQUIRE(comps.point.z > comps.overPoint.z);
+  }
+
+  SECTION("precompute reflection vector") {
+    const auto shape = std::make_shared<Plane>();
+    const auto r =
+        Ray(Point(0, 1, -1), Vector(0, -std::sqrt(2) / 2, std::sqrt(2) / 2));
+    const auto i = Intersection(std::sqrt(2.f), shape);
+    const auto comps = r.precompute(i);
+    REQUIRE(comps.reflectiveV == Vector(0, std::sqrt(2) / 2, std::sqrt(2) / 2));
+  }
+
+  SECTION("finding n1 and n2 at various intersections") {
+    auto [index, expected_n1, expected_n2] =
+        GENERATE(std::tuple{0, 1.0, 1.5}, std::tuple{1, 1.5, 2.0},
+                 std::tuple{2, 2.0, 2.5}, std::tuple{3, 2.5, 2.5},
+                 std::tuple{4, 2.5, 1.5}, std::tuple{5, 1.5, 1.0});
+
+    auto A = std::make_shared<Sphere>(Sphere::GlassSphere());
+    A->transformation() = scaling(2, 2, 2);
+    A->material().setReflectiveIndex(1.5);
+
+    auto B = std::make_shared<Sphere>(Sphere::GlassSphere());
+    B->transformation() = translation(0, 0, -0.25);
+    B->material().setReflectiveIndex(2.0);
+
+    auto C = std::make_shared<Sphere>(Sphere::GlassSphere());
+    C->transformation() = translation(0, 0, 0.25);
+    C->material().setReflectiveIndex(2.5);
+
+    auto r = Ray(Point(0, 0, -4), Vector(0, 0, 1));
+    auto xs = intersections(Intersection(2, A), Intersection(2.75, B),
+                            Intersection(3.25, C), Intersection(4.75, B),
+                            Intersection(5.25, C), Intersection(6, A));
+
+    auto comps = r.precompute(xs[index], xs);
+    REQUIRE(comps.n1 == Approx(expected_n1));
+    REQUIRE(comps.n2 == Approx(expected_n2));
+  }
+
+  SECTION("computing under point") {
+    const auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
+    auto shape = std::make_shared<Sphere>(Sphere::GlassSphere());
+    shape->transformation() = translation(0, 0, 1);
+    const auto i = Intersection(5, shape);
+    const auto xs = intersections(i);
+    const auto comps = r.precompute(i, xs);
+    REQUIRE(comps.underPoint.z > epsilon / 2);
+    REQUIRE(comps.point.z < comps.underPoint.z);
   }
 }

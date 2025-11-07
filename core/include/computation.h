@@ -10,6 +10,10 @@ struct ComputationData {
   vector_t normalV;
   bool inside;
   point_t overPoint;
+  point_t underPoint;
+  vector_t reflectiveV;
+  float n1;
+  float n2;
 };
 
 inline std::ostream &operator<<(std::ostream &os, const ComputationData &c) {
