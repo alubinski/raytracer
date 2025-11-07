@@ -67,6 +67,7 @@ private:
     className(const Color &colorA, const Color &colorB)                        \
         : BinaryPattern(std::make_shared<SolidPattern>(colorA),                \
                         std::make_shared<SolidPattern>(colorB)) {}             \
+    className(PatternPtr a, PatternPtr b) : BinaryPattern(a, b) {}             \
     Color colorAt(const point_t &point) const override;                        \
     bool operator==(const PatternPtr &other) const override;                   \
   };
