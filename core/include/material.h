@@ -5,6 +5,7 @@
 #include "tuple.h"
 #include "types.h"
 #include <algorithm>
+#include <unordered_map>
 
 class Material {
 public:
@@ -57,6 +58,9 @@ public:
   bool operator==(const Material &other) const;
   bool operator!=(const Material &other) const;
 
+  enum class Type { Vacuum, Air, Water, Glass, Diamond };
+  static float GetIndexOfRefraction(Type type) { return s_iorTable.at(type); }
+
 private:
   float ambient_;
   float diffuse_;
@@ -66,4 +70,10 @@ private:
   float refletive_;
   float transparency_;
   float reflectiveIndex_;
+  inline static const std::unordered_map<Type, float> s_iorTable{
+      {Type::Vacuum, 1.0f},
+      {Type::Air, 1.00029f},
+      {Type::Water, 1.333f},
+      {Type::Glass, 1.52f},
+      {Type::Diamond, 2.417f}};
 };
