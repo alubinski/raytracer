@@ -24,9 +24,9 @@ const vector_t &Ray::direction() const { return direction_; }
 
 point_t Ray::position(float t) const { return origin_ + direction_ * t; }
 
-std::vector<Intersection> Ray::intersept(const ShapePtr &sphere) const {
-  const Ray r = (*this) * sphere->transformation().inverse();
-  return sphere->intersept(r);
+std::vector<Intersection> Ray::intersept(const ShapePtr &shape) const {
+  const Ray r = (*this) * shape->transformation().inverse();
+  return shape->intersept(r);
 }
 
 std::vector<Intersection> Ray::intersept(const World &world) const {

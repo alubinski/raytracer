@@ -1,5 +1,6 @@
 #include "lightning.h"
 #include "color.h"
+#include "shape.h"
 #include "tuple.h"
 #include "types.h"
 #include <cmath>
@@ -25,7 +26,7 @@ Color lightining(const Material &material, const ShapeConstPtr &shape,
 
   // compute the ambient contribution
   const auto ambient = Color(effectiveColor * material.ambient());
-  if (inShadow) {
+  if (inShadow || !shape->castShadows()) {
     return ambient;
   }
 

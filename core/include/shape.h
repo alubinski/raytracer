@@ -41,6 +41,10 @@ public:
 
   void setMaterial(const Material &material) { material_ = material; }
 
+  bool castShadows() const { return castsShadows_; }
+
+  void setCastsShadows(bool castShadows) { castsShadows_ = castShadows; }
+
   virtual bool operator==(const Shape &other) const {
     return transformation() == other.transformation() &&
            material() == other.material();
@@ -49,4 +53,5 @@ public:
 private:
   Mat44 transformation_;
   Material material_;
+  bool castsShadows_{true};
 };
