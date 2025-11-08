@@ -128,6 +128,26 @@ TEST_CASE("world - shadeHit()") {
     const auto color = w.shadeHit(comps);
     REQUIRE(color == Color(0.93642, 0.68642, 0.68642));
   }
+
+  SECTION("with a reflective, transparent material") {
+    auto w = World::defaultWorld();
+    const auto r = Ray(Point(0, 0, -3), Vector(0, -SQRT_2 / 2, SQRT_2 / 2));
+    auto floor = std::make_shared<Plane>();
+    floor->transformation() = translation(0, -1, 0);
+    floor->material().setReflective(.5f);
+    floor->material().setTransparency(.5f);
+    floor->material().setReflectiveIndex(1.5f);
+    w.addObject(floor);
+    auto ball = std::make_shared<Sphere>();
+    ball->material().setColor(Color(1, 0, 0));
+    ball->material().setAmbient(0.5);
+    ball->transformation() = translation(0, -3.5, -0.5);
+    w.addObject(ball);
+    const auto xs = intersections(Intersection(SQRT_2, floor));
+    const auto comps = r.precompute(xs[0], xs);
+    const auto color = w.shadeHit(comps, 5);
+    REQUIRE(color == Color(0.93391, 0.69643, 0.69243));
+  }
 }
 
 TEST_CASE("world - colorAt()") {

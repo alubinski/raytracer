@@ -1,5 +1,6 @@
 #include "world.h"
 #include "color.h"
+#include "computation.h"
 #include "intersection.h"
 #include "lightning.h"
 #include "ray.h"
@@ -72,11 +73,22 @@ Color World::shadeHit(const ComputationData &comps,
   Color result{0, 0, 0};
   for (const auto &light : lights_) {
     bool shadowed = isShadowed(comps.overPoint);
-    result = result +
-             lightining(comps.object->material(), comps.object, light,
-                        comps.overPoint, comps.eyeV, comps.normalV, shadowed) +
-             reflectedColor(comps, recursion_limit) +
-             reflactedColor(comps, recursion_limit);
+
+    Color surface =
+        lightining(comps.object->material(), comps.object, light,
+                   comps.overPoint, comps.eyeV, comps.normalV, shadowed);
+
+    Color reflected = reflectedColor(comps, recursion_limit);
+    Color refracted = reflactedColor(comps, recursion_limit);
+    const Material &material = comps.object->material();
+
+    if (material.reflective() > 0.f && material.transparency() > 0.f) {
+      float reflectance = schlick(comps);
+      result = result + surface + reflected * reflectance +
+               refracted * (1.f - reflectance);
+    } else {
+      result = result + surface + reflected + refracted;
+    }
   }
   return result;
 }
