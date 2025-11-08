@@ -56,9 +56,9 @@ inline Matrix<4, 4> view(point_t from, point_t to, vector_t up) {
   const auto forward = (to - from).normalize();
   const auto left = crossProduct(forward, up.normalize());
   const auto trueUp = crossProduct(left, forward);
-  Mat44 orientation{{left.x, left.y, left.z},
-                    {trueUp.x, trueUp.y, trueUp.z},
-                    {-forward.x, -forward.y, -forward.z},
+  Mat44 orientation{{left.x, left.y, left.z, 0.f},
+                    {trueUp.x, trueUp.y, trueUp.z, 0.f},
+                    {-forward.x, -forward.y, -forward.z, 0.f},
                     {0, 0, 0, 1}};
   return orientation * translation(-from.x, -from.y, -from.z);
 }
