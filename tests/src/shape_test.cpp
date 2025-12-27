@@ -1,3 +1,4 @@
+#include "group.h"
 #include "intersection.h"
 #include "material.h"
 #include "ray.h"
@@ -90,4 +91,50 @@ TEST_CASE("shape - normalsAt()") {
     const auto n = s->normalsAt(Point(0, std::sqrt(2) / 2, -std::sqrt(2) / 2));
     REQUIRE(n == Vector(0, 0.97014, -0.24254));
   }
+
+  SECTION("child object") {
+    auto g1 = std::make_shared<Group>();
+    g1->transformation() = rotationY(M_PI / 2);
+    auto g2 = std::make_shared<Group>();
+    g2->transformation() = scaling(1, 2, 3);
+    g1->add(g2);
+    auto s = std::make_shared<Sphere>();
+    s->transformation() = translation(5, 0, 0);
+    g2->add(s);
+    const auto n = s->normalsAt(Point(1.7321, 1.1547, -5.5774));
+    REQUIRE(n == Vector(0.2857, 0.4286, -0.8571));
+  }
+}
+
+TEST_CASE("shape - parent attribute") {
+  auto s = std::make_shared<TestShape>();
+
+  REQUIRE(s->parent() == nullptr);
+}
+
+TEST_CASE("shape - worldPointToObjectPoint()") {
+  auto g1 = std::make_shared<Group>();
+  g1->transformation() = rotationY(M_PI / 2);
+  auto g2 = std::make_shared<Group>();
+  g2->transformation() = scaling(2, 2, 2);
+  g1->add(g2);
+  auto s = std::make_shared<Sphere>();
+  s->transformation() = translation(5, 0, 0);
+  g2->add(s);
+  const auto p = s->worldPointToObjectPoint(Point(-2, 0, -10));
+  REQUIRE(p == Point(0, 0, -1));
+}
+
+TEST_CASE("shape - objectNormalToWorldNormal()") {
+  auto g1 = std::make_shared<Group>();
+  g1->transformation() = rotationY(M_PI / 2);
+  auto g2 = std::make_shared<Group>();
+  g2->transformation() = scaling(1, 2, 3);
+  g1->add(g2);
+  auto s = std::make_shared<Sphere>();
+  s->transformation() = translation(5, 0, 0);
+  g2->add(s);
+  const auto n =
+      s->objectNormalToWorldNormal(Vector(SQRT_3 / 3, SQRT_3 / 3, SQRT_3 / 3));
+  REQUIRE(n == Vector(0.2857, 0.4286, -0.8571));
 }

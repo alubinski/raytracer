@@ -3,6 +3,7 @@
 #include "material.h"
 #include "matrix.h"
 #include "tuple.h"
+#include "types.h"
 #include <vector>
 
 class Ray;
@@ -20,15 +21,12 @@ public:
 
   vector_t normalsAt(const point_t &worldPoint) const {
     if (!worldPoint.isPoint()) {
-      throw std::invalid_argument("Sphere::normalsAt() expects a point as "
+      throw std::invalid_argument("Shape::normalsAt() expects a point as "
                                   "input, but a non-point value was provided.");
     }
-    const auto objectPoint = transformation().inverse() * worldPoint;
+    const auto objectPoint = worldPointToObjectPoint(worldPoint);
     const auto objectNormal = localNormalsAt(objectPoint);
-    auto worldNormal = transformation().inverse().transpose() * objectNormal;
-    // hack - noramlly we should take transformation.submatrix(3,3)
-    worldNormal.w = 0.f;
-    return worldNormal.normalize();
+    return objectNormalToWorldNormal(objectNormal);
   }
 
   Mat44 transformation() const { return transformation_; }
@@ -50,8 +48,29 @@ public:
            material() == other.material();
   }
 
+  ShapePtr parent() { return parent_; }
+
+  ShapeConstPtr parent() const { return parent_; }
+
+  void setParent(ShapePtr parent) { parent_ = parent; }
+
+  point_t worldPointToObjectPoint(point_t worldPoint) const {
+    auto objectPoint =
+        (parent_ ? parent_->worldPointToObjectPoint(worldPoint) : worldPoint);
+    return transformation().inverse() * objectPoint;
+  }
+
+  vector_t objectNormalToWorldNormal(vector_t objectNormal) const {
+    auto worldNormal = transformation().inverse().transpose() * objectNormal;
+    worldNormal.w = 0;
+    worldNormal = worldNormal.normalize();
+    return parent_ ? parent_->objectNormalToWorldNormal(worldNormal)
+                   : worldNormal;
+  }
+
 private:
   Mat44 transformation_;
   Material material_;
   bool castsShadows_{true};
+  ShapePtr parent_;
 };
