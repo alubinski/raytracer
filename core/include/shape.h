@@ -1,9 +1,11 @@
 #pragma once
 
+#include "bounds.h"
 #include "material.h"
 #include "matrix.h"
 #include "tuple.h"
 #include "types.h"
+#include <stdexcept>
 #include <vector>
 
 class Ray;
@@ -68,9 +70,18 @@ public:
                    : worldNormal;
   }
 
+  const Bounds &getBounds() const { return bounds_; }
+
+protected:
+  Bounds &bounds() { return bounds_; }
+  virtual void updateBounds() {
+    throw std::logic_error("Updating bounds not required by this shape.");
+  }
+
 private:
   Mat44 transformation_;
   Material material_;
   bool castsShadows_{true};
   ShapePtr parent_;
+  Bounds bounds_;
 };

@@ -1,14 +1,20 @@
 #pragma once
 
 #include "cylinder.h"
+#include <cmath>
 
 class Cone : public Cylinder {
 public:
-  Cone() : Cylinder() {};
-  Cone(float min, float max, bool closed) : Cylinder(min, max, closed) {}
+  Cone() : Cone(-INFINITY, INFINITY, false) {};
+  Cone(float min, float max, bool closed) : Cylinder(min, max, closed) {
+    updateBounds();
+  }
 
   std::vector<Intersection> intersept(const Ray &ray) const override;
   vector_t localNormalsAt(const point_t &objectPoint) const override;
+
+protected:
+  void updateBounds() override;
 
 private:
   float a(const Ray &ray) const override;

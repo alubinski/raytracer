@@ -4,7 +4,7 @@
 
 class Group : public Shape {
 public:
-  Group() : Shape{} {};
+  Group() : Shape{} { updateBounds(); };
 
   std::vector<Intersection> intersept(const Ray &ray) const override;
 
@@ -19,6 +19,9 @@ public:
   bool empty() const { return children_.empty(); }
 
   bool includes(ShapeConstPtr child) const;
+
+protected:
+  virtual void updateBounds() override;
 
 private:
   std::vector<ShapePtr> children_;

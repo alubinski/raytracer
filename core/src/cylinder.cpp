@@ -12,10 +12,14 @@
 
 Cylinder::Cylinder()
     : minimum_(-std::numeric_limits<float>::infinity()),
-      maximum_(std::numeric_limits<float>::infinity()), closed_(false) {}
+      maximum_(std::numeric_limits<float>::infinity()), closed_(false) {
+  updateBounds();
+}
 
 Cylinder::Cylinder(float min, float max, bool closed)
-    : minimum_(min), maximum_(max), closed_(closed) {}
+    : minimum_(min), maximum_(max), closed_(closed) {
+  updateBounds();
+}
 
 std::vector<Intersection> Cylinder::intersept(const Ray &ray) const {
 
@@ -117,4 +121,10 @@ float Cylinder::c(const Ray &ray) const {
   const auto &orig = ray.origin();
 
   return orig.x * orig.x + orig.z * orig.z - 1.f;
+}
+
+void Cylinder::updateBounds() {
+  auto &b = bounds();
+  b.min() = Point(-1.f, minimum_, -1.f);
+  b.max() = Point(1.f, maximum_, 1.f);
 }

@@ -1,7 +1,10 @@
 #include "cone.h"
 #include "intersection.h"
 #include "ray.h"
+#include "tuple.h"
+#include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <vector>
 
 float Cone::a(const Ray &ray) const {
@@ -52,4 +55,11 @@ vector_t Cone::localNormalsAt(const point_t &objectPoint) const {
     y = -y;
   }
   return Vector(objectPoint.x, y, objectPoint.z);
+}
+
+void Cone::updateBounds() {
+  auto &b = bounds();
+  const auto maxAbs = std::max(std::abs(minimum_), std::abs(maximum_));
+  b.min() = Point(-maxAbs, minimum_, -maxAbs);
+  b.max() = Point(maxAbs, maximum_, maxAbs);
 }

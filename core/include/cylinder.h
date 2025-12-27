@@ -34,6 +34,8 @@ protected:
 
   void inteseptCaps(const Ray &ray, std::vector<Intersection> &xs) const;
 
+  void updateBounds() override;
+
 private:
   virtual float a(const Ray &ray) const;
   virtual float b(const Ray &ray) const;
