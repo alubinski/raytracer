@@ -18,11 +18,10 @@ bool Group::includes(ShapeConstPtr child) const {
 }
 
 std::vector<Intersection> Group::intersept(const Ray &ray) const {
-  const Ray r = ray * transformation().inverse();
   std::vector<Intersection> xs;
-  if (getBounds().intersects(r)) {
+  if (getBounds().intersects(ray)) {
     auto all = children_ | std::views::transform([&](const auto &child) {
-                 return r.intersept(child);
+                 return ray.intersept(child);
                }) |
                std::views::join;
 

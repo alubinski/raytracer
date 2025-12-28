@@ -75,7 +75,7 @@ TEST_CASE("group - intersept()") {
     s->transformation() = translation(5, 0, 0);
     g->add(s);
     const auto r = Ray{Point(10, 0, -10), Vector(0, 0, 1)};
-    const auto xs = g->intersept(r);
+    const auto xs = r.intersept(g);
     REQUIRE(xs.size() == 2);
   }
 }
