@@ -19,15 +19,16 @@ public:
 
   virtual std::vector<Intersection> intersept(const Ray &ray) const = 0;
 
-  virtual vector_t localNormalsAt(const point_t &objectPoint) const = 0;
+  virtual vector_t localNormalsAt(const point_t &objectPoint,
+                                  const Intersection &hit) const = 0;
 
-  vector_t normalsAt(const point_t &worldPoint) const {
+  vector_t normalsAt(const point_t &worldPoint, const Intersection &hit) const {
     if (!worldPoint.isPoint()) {
       throw std::invalid_argument("Shape::normalsAt() expects a point as "
                                   "input, but a non-point value was provided.");
     }
     const auto objectPoint = worldPointToObjectPoint(worldPoint);
-    const auto objectNormal = localNormalsAt(objectPoint);
+    const auto objectNormal = localNormalsAt(objectPoint, hit);
     return objectNormalToWorldNormal(objectNormal);
   }
 

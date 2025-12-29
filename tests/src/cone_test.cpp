@@ -1,5 +1,6 @@
 
 #include "cone.h"
+#include "intersection.h"
 #include "ray.h"
 #include "tuple.h"
 #include <catch2/catch.hpp>
@@ -53,6 +54,6 @@ TEST_CASE("cone - normalsAt()") {
       GENERATE(std::make_tuple(Point(0, 0, 0), Vector(0, 0, 0)),
                std::make_tuple(Point(1, 1, 1), Vector(1, -SQRT_2, 1)),
                std::make_tuple(Point(-1, -1, 0), Vector(-1, 1, 0)));
-  const auto n = cone->localNormalsAt(point);
+  const auto n = cone->localNormalsAt(point, Intersection{0.f, cone});
   REQUIRE(n == normal);
 }

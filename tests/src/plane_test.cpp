@@ -1,13 +1,14 @@
+#include "intersection.h"
 #include "plane.h"
 #include "tuple.h"
 #include <catch2/catch.hpp>
 #include <memory>
 
 TEST_CASE("plane - localNormalsAt()") {
-  const auto p = Plane();
-  const auto n1 = p.localNormalsAt(Point(0, 0, 0));
-  const auto n2 = p.localNormalsAt(Point(10, 0, -10));
-  const auto n3 = p.localNormalsAt(Point(-5, 0, 150));
+  const auto p = std::make_shared<Plane>();
+  const auto n1 = p->localNormalsAt(Point(0, 0, 0), Intersection(0.f, p));
+  const auto n2 = p->localNormalsAt(Point(10, 0, -10), Intersection(0.f, p));
+  const auto n3 = p->localNormalsAt(Point(-5, 0, 150), Intersection(0.f, p));
   REQUIRE(n1 == Vector(0, 1, 0));
   REQUIRE(n2 == Vector(0, 1, 0));
   REQUIRE(n3 == Vector(0, 1, 0));

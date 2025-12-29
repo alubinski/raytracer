@@ -32,7 +32,7 @@ std::vector<Intersection> Group::intersept(const Ray &ray) const {
   return xs;
 }
 
-Tuple Group::localNormalsAt(const Tuple &) const {
+Tuple Group::localNormalsAt(const Tuple &, const Intersection &) const {
   throw std::logic_error(
       "Groups don't have normal by themselves. NormalAtLocal must "
       "be called directly on contained shapes.");

@@ -44,7 +44,8 @@ std::pair<float, float> Cube::checkAxis(const float origin,
   return {tmin, tmax};
 }
 
-vector_t Cube::localNormalsAt(const point_t &objectPoint) const {
+vector_t Cube::localNormalsAt(const point_t &objectPoint,
+                              const Intersection &hit) const {
   const float maxc = std::max({std::abs(objectPoint.x), std::abs(objectPoint.y),
                                std::abs(objectPoint.z)});
 

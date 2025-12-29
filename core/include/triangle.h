@@ -1,5 +1,6 @@
 #pragma once
 
+#include "intersection.h"
 #include "shape.h"
 #include "tuple.h"
 
@@ -9,7 +10,8 @@ public:
 
   virtual std::vector<Intersection> intersept(const Ray &ray) const override;
 
-  virtual vector_t localNormalsAt(const point_t &objectPoint) const override;
+  virtual vector_t localNormalsAt(const point_t &objectPoint,
+                                  const Intersection &hit) const override;
 
   const point_t p1() const { return p1_; }
   const point_t p2() const { return p2_; }
@@ -19,7 +21,7 @@ public:
   const vector_t e2() const { return e2_; }
   const vector_t normal() const { return normal_; }
 
-private:
+protected:
   point_t p1_;
   point_t p2_;
   point_t p3_;
@@ -27,4 +29,9 @@ private:
   vector_t e1_;
   vector_t e2_;
   vector_t normal_;
+
+private:
+  virtual Intersection makeInterseption(float t, float u, float v) const {
+    return Intersection(t, shared_from_this());
+  }
 };

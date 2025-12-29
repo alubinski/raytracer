@@ -1,3 +1,4 @@
+#include "intersection.h"
 #include "ray.h"
 #include "triangle.h"
 #include "tuple.h"
@@ -19,14 +20,15 @@ TEST_CASE("triangle - constructor") {
 }
 
 TEST_CASE("triangle - localNormalAt()") {
-  const auto t = Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0));
-  const auto n1 = t.localNormalsAt(Point(0, 0.5, 0));
-  const auto n2 = t.localNormalsAt(Point(-0.5, 0.75, 0));
-  const auto n3 = t.localNormalsAt(Point(0.5, 0.25, 0));
+  const auto t = std::make_shared<Triangle>(Point(0, 1, 0), Point(-1, 0, 0),
+                                            Point(1, 0, 0));
+  const auto n1 = t->localNormalsAt(Point(0, 0.5, 0), Intersection());
+  const auto n2 = t->localNormalsAt(Point(-0.5, 0.75, 0), Intersection());
+  const auto n3 = t->localNormalsAt(Point(0.5, 0.25, 0), Intersection());
 
-  REQUIRE(n1 == t.normal());
-  REQUIRE(n2 == t.normal());
-  REQUIRE(n3 == t.normal());
+  REQUIRE(n1 == t->normal());
+  REQUIRE(n2 == t->normal());
+  REQUIRE(n3 == t->normal());
 }
 
 TEST_CASE("triangle - intersept()") {

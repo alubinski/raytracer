@@ -57,7 +57,7 @@ Ray::precompute(const Intersection &intersection,
 
   data.point = position(data.t);
   data.eyeV = -direction();
-  data.normalV = data.object->normalsAt(data.point);
+  data.normalV = data.object->normalsAt(data.point, intersection);
   if (dotProduct(data.eyeV, data.normalV) < 0.f) {
     data.inside = true;
     data.normalV = -data.normalV;

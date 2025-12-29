@@ -22,7 +22,8 @@ std::vector<Intersection> Sphere::intersept(const Ray &ray) const {
           Intersection(t2, shared_from_this())};
 }
 
-vector_t Sphere::localNormalsAt(const point_t &objectPoint) const {
+vector_t Sphere::localNormalsAt(const point_t &objectPoint,
+                                const Intersection &hit) const {
   return objectPoint - Point(0, 0, 0);
 };
 

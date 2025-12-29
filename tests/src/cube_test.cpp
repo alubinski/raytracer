@@ -1,4 +1,5 @@
 #include "cube.h"
+#include "intersection.h"
 #include "ray.h"
 #include <catch2/catch.hpp>
 #include <memory>
@@ -49,7 +50,7 @@ TEST_CASE("cube - normalsAt()") {
                std::tuple{Point(1, 1, 1), Vector(1, 0, 0)},
                std::tuple{Point(-1, -1, -1), Vector(-1, 0, 0)});
 
-  const auto cube = Cube();
-  const auto normal = cube.normalsAt(point);
+  const auto cube = std::make_shared<Cube>();
+  const auto normal = cube->normalsAt(point, Intersection{0.f, cube});
   REQUIRE(normal == expected_normal);
 }

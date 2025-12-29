@@ -16,7 +16,8 @@ public:
     return {};
   }
 
-  vector_t localNormalsAt(const point_t &p) const override {
+  vector_t localNormalsAt(const point_t &p,
+                          const Intersection &hit) const override {
     return Vector(p.x, p.y, p.z);
   }
 

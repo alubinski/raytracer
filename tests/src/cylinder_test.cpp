@@ -1,4 +1,5 @@
 #include "cylinder.h"
+#include "intersection.h"
 #include "ray.h"
 #include "tuple.h"
 #include <catch2/catch.hpp>
@@ -93,7 +94,7 @@ TEST_CASE("cylinder - intersept()") {
 
 TEST_CASE("cylinder - normalsAt()") {
   SECTION("Normal vectors on cylinder") {
-    const auto cyl = Cylinder{};
+    const auto cyl = std::make_shared<Cylinder>();
 
     auto [point, expected] =
         GENERATE(std::make_pair(Point(1, 0, 0), Vector(1, 0, 0)),
@@ -101,17 +102,17 @@ TEST_CASE("cylinder - normalsAt()") {
                  std::make_pair(Point(0, -2, 1), Vector(0, 0, 1)),
                  std::make_pair(Point(-1, 1, 0), Vector(-1, 0, 0)));
 
-    vector_t n = cyl.normalsAt(point);
+    vector_t n = cyl->normalsAt(point, Intersection{0.f, cyl});
 
     REQUIRE(n == expected);
   }
 
   SECTION("Normal vectors at cylinder's end caps") {
 
-    auto cyl = Cylinder{};
-    cyl.minimum() = 1;
-    cyl.maximum() = 2;
-    cyl.closed() = true;
+    const auto cyl = std::make_shared<Cylinder>();
+    cyl->minimum() = 1;
+    cyl->maximum() = 2;
+    cyl->closed() = true;
 
     auto [point, expected] = GENERATE(
         // normal = (0, -1, 0)
@@ -124,7 +125,7 @@ TEST_CASE("cylinder - normalsAt()") {
         std::make_tuple(Point(0.5, 2, 0), Vector(0, 1, 0)),
         std::make_tuple(Point(0, 2, 0.5), Vector(0, 1, 0)));
 
-    vector_t n = cyl.normalsAt(point);
+    vector_t n = cyl->normalsAt(point, Intersection{0.f, cyl});
 
     REQUIRE(n == expected);
   }

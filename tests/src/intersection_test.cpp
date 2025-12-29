@@ -3,16 +3,29 @@
 #include "ray.h"
 #include "shape.h"
 #include "sphere.h"
+#include "triangle.h"
 #include "tuple.h"
 #include <catch2/catch.hpp>
 #include <cmath>
 #include <memory>
 
 TEST_CASE("intersection - constructor") {
-  const auto s = std::make_shared<Sphere>();
-  const auto i = Intersection(3.5, s);
-  REQUIRE(i.t() == Approx(3.5));
-  REQUIRE(i.object() == s);
+  SECTION("basic constructor") {
+    const auto s = std::make_shared<Sphere>();
+    const auto i = Intersection(3.5, s);
+    REQUIRE(i.t() == Approx(3.5));
+    REQUIRE(i.object() == s);
+  }
+
+  SECTION("with u & v") {
+
+    const auto s = std::make_shared<Triangle>(Point(0, 1, 0), Point(-1, 0, 0),
+                                              Point(1, 0, 0));
+    const Intersection i(3.5, s, 0.2, 0.4);
+
+    REQUIRE(i.u() == Approx(0.2));
+    REQUIRE(i.v() == Approx(0.4));
+  }
 }
 
 TEST_CASE("intersection - aggregate") {

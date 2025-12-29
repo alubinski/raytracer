@@ -68,7 +68,8 @@ std::vector<Intersection> Cylinder::intersept(const Ray &ray) const {
   return xs;
 }
 
-vector_t Cylinder::localNormalsAt(const point_t &objectPoint) const {
+vector_t Cylinder::localNormalsAt(const point_t &objectPoint,
+                                  const Intersection &hit) const {
   auto dist = objectPoint.x * objectPoint.x + objectPoint.z * objectPoint.z;
 
   if (dist < 1.0f && epsilonEqual(objectPoint.y, maximum_)) {

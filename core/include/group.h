@@ -8,7 +8,8 @@ public:
 
   std::vector<Intersection> intersept(const Ray &ray) const override;
 
-  vector_t localNormalsAt(const point_t &objectPoint) const override;
+  vector_t localNormalsAt(const point_t &objectPoint,
+                          const Intersection &hit) const override;
 
   void add(ShapePtr child);
 

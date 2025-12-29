@@ -34,9 +34,10 @@ std::vector<Intersection> Triangle::intersept(const Ray &ray) const {
 
   const float t = f * dotProduct(e2(), originCrossE1);
 
-  return {Intersection(t, shared_from_this())};
+  return {makeInterseption(t, u, v)};
 }
 
-vector_t Triangle::localNormalsAt(const point_t &objectPoint) const {
+vector_t Triangle::localNormalsAt(const point_t &objectPoint,
+                                  const Intersection &hit) const {
   return normal_;
 }

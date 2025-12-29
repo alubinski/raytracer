@@ -39,7 +39,8 @@ std::vector<Intersection> Cone::intersept(const Ray &ray) const {
 
 float Cone::radiusAt(const float y) const { return std::abs(y); }
 
-vector_t Cone::localNormalsAt(const point_t &objectPoint) const {
+vector_t Cone::localNormalsAt(const point_t &objectPoint,
+                              const Intersection &hit) const {
   auto dist = objectPoint.x * objectPoint.x + objectPoint.z * objectPoint.z;
 
   if (dist < 1.0f && epsilonEqual(objectPoint.y, maximum_)) {

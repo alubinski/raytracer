@@ -13,7 +13,8 @@ std::vector<Intersection> Plane::intersept(const Ray &ray) const {
   return {Intersection{t, shared_from_this()}};
 }
 
-vector_t Plane::localNormalsAt(const point_t &objectPoint) const {
+vector_t Plane::localNormalsAt(const point_t &objectPoint,
+                               const Intersection &hit) const {
   return Vector(0, 1, 0);
 };
 

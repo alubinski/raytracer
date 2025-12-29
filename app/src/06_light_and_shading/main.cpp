@@ -54,7 +54,7 @@ int main() {
         if (!xs.empty()) {
           if (const auto h = hit(xs)) {
             const auto point = r.position(h->t());
-            const auto normal = h->object()->normalsAt(point);
+            const auto normal = h->object()->normalsAt(point, *h);
             const auto eye = -r.direction();
             const auto color = lightining(h->object()->material(), h->object(),
                                           light, point, eye, normal);

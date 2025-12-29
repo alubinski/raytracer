@@ -20,7 +20,8 @@ public:
     return {};
   }
 
-  vector_t localNormalsAt(const point_t &p) const override {
+  vector_t localNormalsAt(const point_t &p,
+                          const Intersection &hit) const override {
     return Vector(p.x, p.y, p.z);
   }
 
@@ -81,14 +82,16 @@ TEST_CASE("shape - normalsAt()") {
   SECTION("translated shape") {
     auto s = std::make_shared<TestShape>();
     s->setTransformation(translation(0, 1, 0));
-    const auto n = s->normalsAt(Point(0, 1.70711, -0.70711));
+    const auto n =
+        s->normalsAt(Point(0, 1.70711, -0.70711), Intersection(0.f, s));
     REQUIRE(n == Vector(0, 0.70711, -0.70711));
   }
 
   SECTION("transformed shape") {
     auto s = std::make_shared<TestShape>();
     s->setTransformation(scaling(1, .5, 1) * rotationZ(M_PI / 5));
-    const auto n = s->normalsAt(Point(0, std::sqrt(2) / 2, -std::sqrt(2) / 2));
+    const auto n = s->normalsAt(Point(0, std::sqrt(2) / 2, -std::sqrt(2) / 2),
+                                Intersection(0.f, s));
     REQUIRE(n == Vector(0, 0.97014, -0.24254));
   }
 
@@ -101,7 +104,8 @@ TEST_CASE("shape - normalsAt()") {
     auto s = std::make_shared<Sphere>();
     s->transformation() = translation(5, 0, 0);
     g2->add(s);
-    const auto n = s->normalsAt(Point(1.7321, 1.1547, -5.5774));
+    const auto n =
+        s->normalsAt(Point(1.7321, 1.1547, -5.5774), Intersection(0.f, s));
     REQUIRE(n == Vector(0.2857, 0.4286, -0.8571));
   }
 }
