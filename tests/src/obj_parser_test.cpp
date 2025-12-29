@@ -53,12 +53,17 @@ TEST_CASE("obj_parser - triangle data") {
   const auto t1 = children[0];
   const auto t2 = children[1];
 
-  REQUIRE(t1.p1 == parser.vertex(1));
-  REQUIRE(t1.p2 == parser.vertex(2));
-  REQUIRE(t1.p3 == parser.vertex(3));
-  REQUIRE(t2.p1 == parser.vertex(1));
-  REQUIRE(t2.p2 == parser.vertex(3));
-  REQUIRE(t2.p3 == parser.vertex(4));
+  REQUIRE(t1.p1() == 1);
+  REQUIRE(t1.p2() == 2);
+  REQUIRE(t1.p3() == 3);
+  REQUIRE(t2.p1() == 1);
+  REQUIRE(t2.p2() == 3);
+  REQUIRE(t2.p3() == 4);
+  // REQUIRE(t1.p2 == parser.vertex(2));
+  // REQUIRE(t1.p3 == parser.vertex(3));
+  // REQUIRE(t2.p1 == parser.vertex(1));
+  // REQUIRE(t2.p2 == parser.vertex(3));
+  // REQUIRE(t2.p3 == parser.vertex(4));
 }
 
 TEST_CASE("obj_parser - polygon data") {
@@ -77,15 +82,24 @@ TEST_CASE("obj_parser - polygon data") {
   const auto t2 = children[1];
   const auto t3 = children[2];
 
-  REQUIRE(t1.p1 == parser.vertex(1));
-  REQUIRE(t1.p2 == parser.vertex(2));
-  REQUIRE(t1.p3 == parser.vertex(3));
-  REQUIRE(t2.p1 == parser.vertex(1));
-  REQUIRE(t2.p2 == parser.vertex(3));
-  REQUIRE(t2.p3 == parser.vertex(4));
-  REQUIRE(t3.p1 == parser.vertex(1));
-  REQUIRE(t3.p2 == parser.vertex(4));
-  REQUIRE(t3.p3 == parser.vertex(5));
+  REQUIRE(t1.p1() == 1);
+  REQUIRE(t1.p2() == 2);
+  REQUIRE(t1.p3() == 3);
+  REQUIRE(t2.p1() == 1);
+  REQUIRE(t2.p2() == 3);
+  REQUIRE(t2.p3() == 4);
+  REQUIRE(t3.p1() == 1);
+  REQUIRE(t3.p2() == 4);
+  REQUIRE(t3.p3() == 5);
+  // REQUIRE(t1.p1 == parser.vertex(1));
+  // REQUIRE(t1.p2 == parser.vertex(2));
+  // REQUIRE(t1.p3 == parser.vertex(3));
+  // REQUIRE(t2.p1 == parser.vertex(1));
+  // REQUIRE(t2.p2 == parser.vertex(3));
+  // REQUIRE(t2.p3 == parser.vertex(4));
+  // REQUIRE(t3.p1 == parser.vertex(1));
+  // REQUIRE(t3.p2 == parser.vertex(4));
+  // REQUIRE(t3.p3 == parser.vertex(5));
 }
 
 TEST_CASE("obj_parser - named groups") {
@@ -106,12 +120,12 @@ TEST_CASE("obj_parser - named groups") {
   const auto t1 = g1->children[0];
   const auto t2 = g2->children[0];
 
-  REQUIRE(t1.p1 == parser.vertex(1));
-  REQUIRE(t1.p2 == parser.vertex(2));
-  REQUIRE(t1.p3 == parser.vertex(3));
-  REQUIRE(t2.p1 == parser.vertex(1));
-  REQUIRE(t2.p2 == parser.vertex(3));
-  REQUIRE(t2.p3 == parser.vertex(4));
+  REQUIRE(t1.p1() == 1);
+  REQUIRE(t1.p2() == 2);
+  REQUIRE(t1.p3() == 3);
+  REQUIRE(t2.p1() == 1);
+  REQUIRE(t2.p2() == 3);
+  REQUIRE(t2.p3() == 4);
 }
 
 TEST_CASE("obj_parser - convert") {
@@ -128,4 +142,40 @@ TEST_CASE("obj_parser - convert") {
 
   auto g = parser.createRenderableShapes();
   REQUIRE(g->children().size() == 2);
+}
+
+TEST_CASE("obj_parser - normal data") {
+  auto ss = std::stringstream(std::string("vn 0 0 1\n"
+                                          "vn 0.707 0 -0.707\n"
+                                          "vn 1 2 3\n"));
+  Test_OBJ_Parser parser(ss);
+  parser.parse();
+  REQUIRE(parser.normal(1) == Vector(0, 0, 1));
+  REQUIRE(parser.normal(2) == Vector(0.707, 0, -0.707));
+  REQUIRE(parser.normal(3) == Vector(1, 2, 3));
+}
+
+TEST_CASE("obj_parser - faces with normals data") {
+  auto ss = std::stringstream(std::string("v 0 1 0\n"
+                                          "v -1 0 0\n"
+                                          "v 1 0 0\n"
+                                          "vn -1 0 0\n"
+                                          "vn 1 0 0\n"
+                                          "vn 0 1 0\n"
+                                          "f 1//3 2//1 3//2\n"
+                                          "f 1/0/3 2/102/1 3/14/2\n"));
+  Test_OBJ_Parser parser(ss);
+  parser.parse();
+
+  const auto g = parser.defaultGroup();
+  const auto children = g.children;
+  const auto t1 = children[0];
+  const auto t2 = children[1];
+  REQUIRE(t1.p1() == 1);
+  REQUIRE(t1.p2() == 2);
+  REQUIRE(t1.p3() == 3);
+  REQUIRE(t1.n1() == 3);
+  REQUIRE(t1.n2() == 1);
+  REQUIRE(t1.n3() == 2);
+  REQUIRE(t1 == t2);
 }

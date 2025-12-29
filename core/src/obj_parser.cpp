@@ -1,5 +1,6 @@
 #include "obj_parser.h"
 #include "triangle.h"
+#include "tuple.h"
 #include <cstdint>
 #include <format>
 #include <iostream>
@@ -35,6 +36,15 @@ std::optional<std::string> OBJ_Parser::parseLine(std::string_view line) {
   if (line.empty()) {
     ignoredLines_++;
     return "empty line";
+  }
+
+  if (line.starts_with("vn")) {
+    line.remove_prefix(2);
+
+    if (parseNormalLine(line)) {
+      return {};
+    }
+    return "invalid normal";
   }
 
   char prefix{line.front()};
@@ -113,6 +123,13 @@ point_t OBJ_Parser::vertex(size_t idx) const {
   return vertices_[idx - 1];
 }
 
+vector_t OBJ_Parser::normal(size_t idx) const {
+  if (idx == 0 || idx > normals_.size())
+    throw std::out_of_range("normal index out of range (1-based)");
+
+  return normals_[idx - 1];
+}
+
 bool OBJ_Parser::parseVertexLine(std::string_view line) {
   float x, y, z;
   if (parseNumber(line, x) && parseNumber(line, y) && parseNumber(line, z)) {
@@ -126,30 +143,59 @@ bool OBJ_Parser::parseVertexLine(std::string_view line) {
 }
 
 bool OBJ_Parser::parseFaceLine(std::string_view line) {
-  std::vector<size_t> indices;
 
-  while (true) {
-    std::size_t idx;
-    if (!parseNumber(line, idx))
-      break;
+  std::vector<FaceVertex> indices;
+  skipWS(line);
 
-    if (idx == 0 || idx > vertices_.size())
+  while (!line.empty()) {
+    FaceVertex fv{};
+    if (!parseNumber(line, fv.v))
       return false;
 
-    indices.push_back(idx);
+    if (fv.v == 0 || fv.v > vertices_.size())
+      return false;
+
+    if (!line.empty() && line.front() == '/') {
+      line.remove_prefix(1);
+
+      // skip texture vertex
+      if (!line.empty() && line.front() != '/') {
+        std::size_t dummy;
+        if (!parseNumber(line, dummy))
+          return false;
+      }
+
+      if (!line.empty() && line.front() == '/') {
+        line.remove_prefix(1);
+        if (!parseNumber(line, fv.n))
+          return false;
+
+        if (fv.n == 0 || fv.n > normals_.size())
+          return false;
+      }
+    }
+
+    indices.push_back(fv);
+    skipWS(line);
   }
 
   if (indices.size() < 3) {
     return false;
   }
 
-  const auto p1 = vertex(indices[0]);
+  // const auto p1 = vertex(indices[0].v);
+  // const auto n1 = normal(indices[0].n);
+  const auto f1 = indices[0];
 
   for (size_t i{1}; i < indices.size() - 1; ++i) {
 
-    const auto p2 = vertex(indices[i]);
-    const auto p3 = vertex(indices[i + 1]);
-    groups_[currGroup].children.push_back(OBJ_Triangle(p1, p2, p3));
+    // const auto p2 = vertex(indices[i].v);
+    // const auto n2 = normal(indices[i].n);
+    // const auto p3 = vertex(indices[i + 1].v);
+    // const auto n3 = normal(indices[i + 1].n);
+    const auto f2 = indices[i];
+    const auto f3 = indices[i + 1];
+    groups_[currGroup].children.push_back(OBJ_Triangle(f1, f2, f3));
   }
 
   skipWS(line);
@@ -168,4 +214,16 @@ bool OBJ_Parser::parseGroupLine(std::string_view line) {
   groups_.push_back(OBJ_Group{name});
   currGroup = groups_.size() - 1;
   return true;
+}
+
+bool OBJ_Parser::parseNormalLine(std::string_view line) {
+  float x, y, z;
+  if (parseNumber(line, x) && parseNumber(line, y) && parseNumber(line, z)) {
+    skipWS(line);
+    if (line.empty()) {
+      normals_.push_back(Vector(x, y, z));
+      return true;
+    }
+  }
+  return false;
 }
