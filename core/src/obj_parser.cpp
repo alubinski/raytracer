@@ -152,8 +152,8 @@ bool OBJ_Parser::parseFaceLine(std::string_view line) {
     if (!parseNumber(line, fv.v))
       return false;
 
-    if (fv.v == 0 || fv.v > vertices_.size())
-      return false;
+    // if (fv.v == 0 || fv.v > vertices_.size())
+    //   return false;
 
     if (!line.empty() && line.front() == '/') {
       line.remove_prefix(1);
@@ -170,8 +170,8 @@ bool OBJ_Parser::parseFaceLine(std::string_view line) {
         if (!parseNumber(line, fv.n))
           return false;
 
-        if (fv.n == 0 || fv.n > normals_.size())
-          return false;
+        // if (fv.n == 0 || fv.n > normals_.size())
+        //   return false;
       }
     }
 

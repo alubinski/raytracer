@@ -1,3 +1,4 @@
+#pragma once
 
 #include "group.h"
 #include "smooth_triangle.h"
@@ -31,7 +32,7 @@ struct OBJ_Triangle {
 
   std::shared_ptr<Shape> toShape(const std::vector<point_t> &vertices,
                                  const std::vector<vector_t> &normals) const {
-    if (f1.n != 0 && f2.n != 0 && f2.n != 0) {
+    if (f1.n != 0 && f2.n != 0 && f3.n != 0) {
       return std::make_shared<SmoothTriangle>(vertices[f1.n], vertices[f2.n],
                                               vertices[f3.n], normals[f1.n],
                                               normals[f2.n], normals[f3.n]);
@@ -107,10 +108,25 @@ public:
   }
 
   std::shared_ptr<Group> createRenderableShapes() const {
-    auto superGroup = std::make_shared<Group>();
+    // auto superGroup = std::make_shared<Group>();
+    std::shared_ptr<Group> superGroup = nullptr;
     for (auto &g : groups_) {
-      auto group = g.toGroup(vertices_, normals_);
-      if (!group->empty()) {
+      auto group = std::make_shared<Group>();
+      for (auto &t : g.children) {
+        if (t.f1.n != 0 && t.f2.n != 0 && t.f3.n != 0) {
+          group->add(std::make_shared<SmoothTriangle>(
+              vertex(t.p1()), vertex(t.p2()), vertex(t.p3()), normal(t.n1()),
+              normal(t.n2()), normal(t.n3())));
+        } else {
+          group->add(std::make_shared<Triangle>(vertex(t.p1()), vertex(t.p2()),
+                                                vertex(t.p3())));
+        }
+      }
+      if (!superGroup) {
+        superGroup = group;
+      }
+
+      if (!group->empty() && superGroup) {
         superGroup->add(group);
       }
     }

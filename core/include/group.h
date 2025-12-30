@@ -1,3 +1,4 @@
+#pragma once
 #include "shape.h"
 #include "types.h"
 #include <vector>

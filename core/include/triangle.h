@@ -30,6 +30,8 @@ protected:
   vector_t e2_;
   vector_t normal_;
 
+  void updateBounds() override;
+
 private:
   virtual Intersection makeInterseption(float t, float u, float v) const {
     return Intersection(t, shared_from_this());

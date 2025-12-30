@@ -9,6 +9,7 @@ Triangle::Triangle(point_t p1, point_t p2, point_t p3)
   e1_ = p2 - p1;
   e2_ = p3 - p1;
   normal_ = crossProduct(e2_, e1_).normalize();
+  updateBounds();
 }
 
 std::vector<Intersection> Triangle::intersept(const Ray &ray) const {
@@ -40,4 +41,18 @@ std::vector<Intersection> Triangle::intersept(const Ray &ray) const {
 vector_t Triangle::localNormalsAt(const point_t &objectPoint,
                                   const Intersection &hit) const {
   return normal_;
+}
+
+void Triangle::updateBounds() {
+  auto &b = bounds();
+  float minx = std::min(p1_.x, std::min(p2_.x, p3_.x));
+  float miny = std::min(p1_.y, std::min(p2_.y, p3_.y));
+  float minz = std::min(p1_.z, std::min(p2_.z, p3_.z));
+
+  float maxx = std::max(p1_.x, std::max(p2_.x, p3_.x));
+  float maxy = std::max(p1_.y, std::max(p2_.y, p3_.y));
+  float maxz = std::max(p1_.z, std::max(p2_.z, p3_.z));
+
+  b.min() = Point(minx, miny, minz);
+  b.max() = Point(maxx, maxy, maxz);
 }
